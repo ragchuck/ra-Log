@@ -85,7 +85,8 @@ if (Kohana::$environment === Kohana::DEVELOPMENT)
 	* - boolean  caching     enable or disable internal caching                 FALSE
 	*/
 	Kohana::init(array(
-		'base_url'   => '/ra_log/public',
+		'base_url'  => '/ra_log/public',
+		'profile'	=> TRUE,
 		//'errors'    => FALSE,
 	));
 
@@ -108,7 +109,8 @@ if (Kohana::$environment === Kohana::DEVELOPMENT)
 	/**
 	* Attach the file write to logging. Multiple writers are supported.
 	*/
-	Kohana::$log->attach(new Fire_Log(array('profiling'=>FALSE)));
+	$flog = new Fire_Log(array('profiling'=>FALSE));
+	Kohana::$log->attach($flog);
 }
 else // Kohana::$environment = PRODUCTION, STAGING, TESTING
 {
@@ -163,6 +165,13 @@ Kohana::$config->attach(new Config_File);
  * Set the routes. Each route must have a minimum of a name, a URI and a set of
  * defaults for the URI.
  */
+
+Route::set('import', 'import/file/<file>', array('file' => '[^/\\~*]*'))
+	->defaults(array(
+		'controller' => 'import',
+		'action'	 => 'import'
+	));
+
 Route::set('default', '(<controller>(/<action>(/<id>)))')
 	->defaults(array(
 		'controller' => 'dashboard',

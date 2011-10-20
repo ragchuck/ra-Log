@@ -1,11 +1,11 @@
-<?php defined('SYSPATH') or die('No direct script access.');
+<?php
+defined('SYSPATH') or die('No direct script access.');
 
 /**
  * Description of Controller_Website
  *
  * @author Martin Zoellner <ragchuck at googlemail.com>
  */
-
 class Controller_Website extends Controller {
 
 	/**
@@ -16,7 +16,7 @@ class Controller_Website extends Controller {
 
 	/**
 	 * @var  boolean  auto render template
-	 **/
+	 */
 	public $auto_render = TRUE;
 
 	/**
@@ -24,7 +24,6 @@ class Controller_Website extends Controller {
 	 * @var Array
 	 */
 	public $data = array();
-
 
 	/**
 	 * Loads the template [View] object.
@@ -59,9 +58,9 @@ class Controller_Website extends Controller {
 			else
 			{
 				// Aplly data to the view
-				foreach($this->data as $key => $value)
+				foreach ($this->data as $key => $value)
 				{
-					$this->template->set($key,$value);
+					$this->template->set($key, $value);
 				}
 				$this->response->body($this->template->render());
 			}
@@ -71,4 +70,5 @@ class Controller_Website extends Controller {
 
 		parent::after();
 	}
+
 }
