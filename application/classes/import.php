@@ -22,6 +22,12 @@ class Import {
 
 	/**
 	 *
+	 * @var array importet data
+	 */
+	public $data = array();
+
+	/**
+	 *
 	 * @param string $path
 	 * @return string $path with DIRECTORY_SEPARATOR at the end
 	 */
@@ -135,10 +141,17 @@ class Import {
 
 			Kohana::$log->add(Log::DEBUG, "Using schema :schema", array(':schema' => $schema_name));
 
-			// ETL Data
+			$cnt = 0;
+
+			// ETL Data ########################################################
 			$channels = $schema->extract($working_copy, $cfg->get('channel_filter', FALSE));
 			$data = $schema->transform($channels);
 			$return = $schema->load($data);
+
+			$cnt = count($return);
+
+			$this->data += $return;
+
 
 			// Cleaning up workspace
 			Kohana::$log->add(Log::DEBUG, 'Cleanup temp directory.');
@@ -170,9 +183,9 @@ class Import {
 			@copy($file_path, $file_bad);
 
 			//Kohana::$log->add(Log::ERROR,$e);
-			Kohana::$log->add(Log::DEBUG, "Import aborted [:i rows affected] (:file)", array(':i' => $return, ':file' => $file));
+			Kohana::$log->add(Log::DEBUG, "Import aborted [:i rows affected] (:file)", array(':i' => $cnt, ':file' => $file));
 
-			if ($cfg->get('throw_exceptions', self::$throw_exceptions))
+			if ($cfg instanceof Kohana_Config_Group AND $cfg->get('throw_exceptions', self::$throw_exceptions))
 				throw new Import_Exception("Cannot import file ':file'. :message",
 					array(':file' => $file, ':message' => $e->getMessage())
 				);
@@ -180,9 +193,9 @@ class Import {
 			return FALSE;
 		}
 
-		Kohana::$log->add(Log::DEBUG, "Import end [:i rows affected] (:file)", array(':i' => $return, ':file' => $file));
+		Kohana::$log->add(Log::DEBUG, "Import end [:i rows affected] (:file)", array(':i' => $cnt, ':file' => $file));
 
-		return $return;
+		return TRUE;
 	}
 
 }

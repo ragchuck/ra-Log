@@ -75,6 +75,7 @@ class Import_Schema_MeanPublic implements Import_Schema_Interface {
 	{
 		$cnt = 0;
 		$cnt_dup = 0;
+		$arr = array();
 
 		foreach ($data as $row)
 		{
@@ -87,12 +88,15 @@ class Import_Schema_MeanPublic implements Import_Schema_Interface {
 			catch (Exception $e)
 			{
 				// delete & retry...
-				if (!$d->loaded())
-					$d->find();
-				$d->delete();
+				DB::delete('data')
+					->where('ch_serial', '=', $d->ch_serial)
+					->where('ch_datetime', '=', $d->ch_datetime)
+					->where('ch_key', '=', $d->ch_key)
+					->execute();
 				$d->save();
 				$cnt_dup ++;
 			}
+			$arr[] = $d;
 			$cnt ++;
 		}
 
@@ -100,7 +104,7 @@ class Import_Schema_MeanPublic implements Import_Schema_Interface {
 			array(':a' => $cnt, ':n' => $cnt - $cnt_dup, ':r' => $cnt_dup)
 		);
 
-		return $cnt;
+		return $arr;
 	}
 
 }

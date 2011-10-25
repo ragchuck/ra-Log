@@ -31,13 +31,32 @@ class Controller_Import extends Controller_Ajax {
 		if (!$file_name)
 			throw new Exception("Argument FILE is missing");
 
+		// Be sure to only profile if it's enabled
+		if (Kohana::$profiling === TRUE)
+		{
+			// Start a new benchmark
+			$benchmark = Profiler::start('Import', __FUNCTION__);
+		}
 
 		$import = new Import;
 
-		$cnt = $import->import_file($file_name);
+		$ok = $import->import_file($file_name);
 
 		$data['file'] = $file_name;
-		$data['count'] = $cnt;
+
+		if ($ok === TRUE) {
+			$data['count'] = count($import->data);
+			foreach ($import->data as $d) {
+				$data['data'][] = $d->to_array();
+			}
+		}
+
+		if (isset($benchmark))
+		{
+			// Stop the benchmark
+			Profiler::stop($benchmark);
+		}
+
 
 		$this->json($data);
 	}

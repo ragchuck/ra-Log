@@ -32,3 +32,5 @@ public/js/highcharts/examples/
 ehthumbs.db
 Icon?
 Thumbs.db
+
+nbproject/*
