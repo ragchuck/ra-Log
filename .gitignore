@@ -1,6 +1,6 @@
 # Cache #
 #########
-application/cache
+application/cache/*
 
 # Examples #
 ############
