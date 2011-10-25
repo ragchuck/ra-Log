@@ -16,7 +16,7 @@ class Controller_Dashboard extends Controller_Website {
 
 	public function action_index()
 	{
-		$this->data['content'] = 'Test';
+		$this->data['content'] = 'Test1';
 
 	}
 
