@@ -86,6 +86,7 @@ if (Kohana::$environment === Kohana::DEVELOPMENT)
 	*/
 	Kohana::init(array(
 		'base_url'  => '/ra_log/public',
+		'index_file' => FALSE,
 		'profile'	=> TRUE,
 		//'errors'    => FALSE,
 	));
@@ -130,6 +131,7 @@ else // Kohana::$environment = PRODUCTION, STAGING, TESTING
 	*/
 	Kohana::init(array(
 		'base_url'	=> '/ra_log/',
+		'index_file' => FALSE,
 		'errors'	=> FALSE,
 		'profile'	=> FALSE,
 		'caching'	=> TRUE,
