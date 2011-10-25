@@ -1,5 +1,5 @@
-# Kohana PHP Framework, version 3.2 (development)
+# ra|Log
 
-This is the current development version of [Kohana](http://kohanaframework.org/).
+Data logger for SMA installations.
 
-For the most current release, see the 3.1/master branch.
+*Currently under construction.*
