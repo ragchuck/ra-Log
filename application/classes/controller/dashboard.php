@@ -6,18 +6,23 @@
  * @author Martin Zoellner <ragchuck at googlemail.com>
  */
 
-class Controller_Dashboard extends Controller_Website {
+class Controller_Dashboard extends Controller {
 
-	/**
-	 *
-	 * @var View
-	 */
-	public $template = 'index';
 
 	public function action_index()
 	{
-		$this->data['content'] = 'Test1';
 
+		$view = new View('dashboard');
+
+		
+		$view->chart = $this->make_request('default_time', array(
+			'controller' => 'chart',
+			'action' => 'build',
+			'time' => $this->_time,
+		));
+
+
+		$this->response->body($view);
 	}
 
 

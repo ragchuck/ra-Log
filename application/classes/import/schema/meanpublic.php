@@ -11,7 +11,7 @@ class Import_Schema_MeanPublic implements Import_Schema_Interface {
 	public function extract($filename, $filter)
 	{
 		$channels = array();
-		$files = Util::unzip($filename);
+		$files = Import_Helper::unzip($filename);
 		// scanning workspace for uncompressed files
 		foreach ($files as $file)
 		{
@@ -19,7 +19,7 @@ class Import_Schema_MeanPublic implements Import_Schema_Interface {
 			$bname = basename($file);
 			if (substr($bname, 0, 5) != 'Mean.' || substr($bname, -8) != '.xml.zip')
 				continue;
-			$innerFiles = Util::unzip($file);
+			$innerFiles = Import_Helper::unzip($file);
 			foreach ($innerFiles as $xmlFile)
 			{
 				$xml = new SimpleXMLElement($xmlFile, NULL, true);

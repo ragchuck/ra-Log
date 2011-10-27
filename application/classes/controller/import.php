@@ -12,8 +12,7 @@ class Controller_Import extends Controller_Ajax {
 	{
 
 		$import_config = Kohana::$config->load('import');
-		Fire::fb($import_config->get('path'));
-		$files = array_filter(scandir($import_config->get('path')), 'Util::filter_array_WBZIP');
+		$files = array_filter(scandir($import_config->get('path')), 'Import_Helper::filter_array_WBZIP');
 		sort($files, SORT_STRING);
 		$max_files = $import_config->get('max_files');
 		if ($max_files != 0)

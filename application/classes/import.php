@@ -26,15 +26,6 @@ class Import {
 	 */
 	public $data = array();
 
-	/**
-	 *
-	 * @param string $path
-	 * @return string $path with DIRECTORY_SEPARATOR at the end
-	 */
-	public static function path($path)
-	{
-		return dirname($path.'/.').DIRECTORY_SEPARATOR;
-	}
 
 	/**
 	 *
@@ -66,7 +57,7 @@ class Import {
 			$cfg = Kohana::$config->load('import');
 
 			// Get file path and check if the file exsits
-			$file_path = self::path($cfg->get('path')).$file;
+			$file_path = Import_Helper::path($cfg->get('path')).$file;
 
 			if ( ! file_exists($file_path))
 			{
@@ -75,11 +66,11 @@ class Import {
 			}
 
 			// Setup the workspace
-			$temp_path = self::path($cfg->get('workspace', sys_get_temp_dir()));
+			$temp_path = Import_Helper::path($cfg->get('workspace', sys_get_temp_dir()));
 
 			if (file_exists($temp_path))
 			{
-				$workspace = self::path($temp_path.md5($file));
+				$workspace = Import_Helper::path($temp_path.md5($file));
 
 				if (file_exists($workspace) OR mkdir($workspace))
 				{
@@ -105,7 +96,7 @@ class Import {
 
 			if ($archive)
 			{
-				$archive = self::path($archive);
+				$archive = Import_Helper::path($archive);
 				if (file_exists($archive))
 				{
 					$file_archive = $archive.$file;
@@ -117,7 +108,7 @@ class Import {
 				}
 			}
 
-			$bad_path = self::path($cfg->get('bad_path'));
+			$bad_path = Import_Helper::path($cfg->get('bad_path'));
 
 			if ($bad_path)
 			{
@@ -136,8 +127,10 @@ class Import {
 			$schema = new $schema_class;
 
 			if ( ! ($schema instanceof Import_Schema_Interface))
+			{
 				throw new Import_Exception(":schema isn't a valid import schema.",
 					array(':schema' => $schema_name));
+			}
 
 			Kohana::$log->add(Log::DEBUG, "Using schema :schema", array(':schema' => $schema_name));
 
@@ -174,7 +167,9 @@ class Import {
 			}
 
 			if (Kohana::$environment !== Kohana::DEVELOPMENT)
+			{
 				unlink($file_path);
+			}
 		}
 		catch (Exception $e)
 		{
@@ -182,7 +177,6 @@ class Import {
 			// copy file to the bad-Directory
 			@copy($file_path, $file_bad);
 
-			//Kohana::$log->add(Log::ERROR,$e);
 			Kohana::$log->add(Log::DEBUG, "Import aborted [:i rows affected] (:file)", array(':i' => $cnt, ':file' => $file));
 
 			if ($cfg instanceof Kohana_Config_Group AND $cfg->get('throw_exceptions', self::$throw_exceptions))
