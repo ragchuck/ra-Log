@@ -13,7 +13,7 @@ class Import_Helper {
 		return dirname($path.'/.').DIRECTORY_SEPARATOR;
 	}
 
-	
+
 	public static function filter_array_WBZIP($string)
 	{
 		if (substr($string, 0, 2) == 'wb' && substr($string, -4) == '.zip')
@@ -21,6 +21,12 @@ class Import_Helper {
 		return false;
 	}
 
+	/**
+	 * Extracts a zip-archive and returns the extracted filenames
+	 *
+	 * @param string $file
+	 * @return array
+	 */
 	public static function unzip($file)
 	{
 
@@ -75,7 +81,6 @@ class Import_Helper {
 		}
 		else
 		{
-			//$out = shell_exec('unzip "' . $file . '" "Mean.*" -d "' . $dir . '"');
 			$out = shell_exec('unzip "'.$file.'" -d "'.$dir.'"');
 			preg_match_all($infZipPattern, $out, $matches, PREG_PATTERN_ORDER);
 			$extracted_files = $matches[1];

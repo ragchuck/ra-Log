@@ -84,7 +84,7 @@ class Kohana_Exception extends Kohana_Kohana_Exception {
 
 			if (Request::$current !== NULL AND Request::current()->is_ajax() === TRUE)
 			{
-
+				$http_header_status = ($e instanceof HTTP_Exception) ? $code : 500;
 				header('Content-Type: application/json; charset='.Kohana::$charset, TRUE, $http_header_status);
 
 				// Set up json object

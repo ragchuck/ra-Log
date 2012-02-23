@@ -53,7 +53,7 @@ ini_set('unserialize_callback_func', 'spl_autoload_call');
 /**
  * Set the default language
  */
-I18n::lang('de-de');
+I18n::lang('de');
 
 /**
  * Set Kohana::$environment if a 'KOHANA_ENV' environment variable has been supplied.
@@ -103,12 +103,13 @@ Kohana::modules(array(
 	// 'unittest'   => MODPATH.'unittest',   // Unit testing
 	// 'userguide'  => MODPATH.'userguide',  // User guide and API documentation
 	'firephp'	=> MODPATH.'firephp',
+	'smarty'	=> MODPATH.'smarty',
 ));
 
 /**
 * Attach the file write to logging. Multiple writers are supported.
 */
-if (!$dev)
+if ($dev)
 {
 	Kohana::$log->attach(new Log_File(APPPATH.'logs'));
 }
@@ -133,30 +134,24 @@ Route::set('import', 'import/file/<file>',
 		'action'	 => 'import'
 	));
 
-Route::set('default_ymd', '<controller>(.<action>)(/<year>(/<month>(/<day>)))',
+Route::set('datetime', '<controller>(/<action>)(/<year>(/<month>(/<day>)))(.<format>)',
 	array(
 		'controller' => 'index|dashboard|chart|table',
-		'year' => '\d{4}',
+		'action' => '[a-z]+',
+		'year' => '\d{4,}',
 		'month' => '\d{1,2}',
 		'day' => '\d{1,2}',
 	))
 	->defaults(array(
 		'controller' => 'index',
 		'action'     => 'index',
+		'format'	 => 'html'
 	));
 
-Route::set('default_time', '<controller>(.<action>)/<time>',
-	array(
-		'controller' => 'index|dashboard|chart|table',
-		'time' => '\d+',
-	))
+
+Route::set('default', '(<controller>(/<action>(/<id>)))(.<format>)')
 	->defaults(array(
-		'controller' => 'index',
+		'controller' => 'dashboard',
 		'action'     => 'index',
 	));
 
-Route::set('default', '(<controller>(/<action>(/<id>)))')
-	->defaults(array(
-		'controller' => 'index',
-		'action'     => 'index',
-	));

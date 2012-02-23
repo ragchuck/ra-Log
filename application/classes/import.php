@@ -1,6 +1,7 @@
 <?php
 defined('SYSPATH') or die('No direct script access.');
 
+
 /**
  * Import class to load the SMA-Zip archives
  *
@@ -22,17 +23,37 @@ class Import {
 
 	/**
 	 *
-	 * @var array importet data
+	 * @var array imported data
 	 */
 	public $data = array();
 
+	/**
+	 *
+	 * @var Kohana_Config_Group
+	 */
+	public $config;
 
 	/**
 	 *
 	 */
 	public function __construct()
 	{
+		// Fetching import config
+		$this->config = Kohana::$config->load('import');
+	}
 
+	public function find_files()
+	{
+
+		$files = array_filter(scandir($this->config->get('path')),
+			'Import_Helper::filter_array_WBZIP');
+		sort($files, SORT_STRING);
+		$max_files = $this->config->get('max_files', 0);
+		if ($max_files != 0)
+		{
+			$files = array_slice($files, 0, $max_files);
+		}
+		return $files;
 	}
 
 	/**
@@ -41,23 +62,27 @@ class Import {
 	 * Loads the data
 	 *
 	 * @param string $file
-	 * @return int Count of imported rows
+	 * @return void
 	 * @throws Import_Exception
 	 */
 	public function import_file($file)
 	{
 
-		$return = false;
+		if (Kohana::$profiling)
+		{
+			$token = Profiler::start('Import', __FUNCTION__);
+		}
+
+		$data = false;
 
 		try
 		{
 			Kohana::$log->add(Log::DEBUG, "Import start (:file)", array(':file' => $file));
 
-			// Fetching import config
-			$cfg = Kohana::$config->load('import');
+			$this->config = Kohana::$config->load('import');
 
 			// Get file path and check if the file exsits
-			$file_path = Import_Helper::path($cfg->get('path')).$file;
+			$file_path = Import_Helper::path($this->config->get('path')).$file;
 
 			if ( ! file_exists($file_path))
 			{
@@ -66,7 +91,8 @@ class Import {
 			}
 
 			// Setup the workspace
-			$temp_path = Import_Helper::path($cfg->get('workspace', sys_get_temp_dir()));
+			$temp_path = Import_Helper::path($this->config->get('workspace',
+						sys_get_temp_dir()));
 
 			if (file_exists($temp_path))
 			{
@@ -78,7 +104,8 @@ class Import {
 					// Create a copy to the workspace
 					$working_copy = $workspace.$file;
 					copy($file_path, $working_copy);
-					Kohana::$log->add(Log::DEBUG, "Created temp directory ':path'", array(':path' => $workspace));
+					Kohana::$log->add(Log::DEBUG, "Created temp directory ':path'",
+						array(':path' => $workspace));
 				}
 				else
 				{
@@ -92,7 +119,7 @@ class Import {
 					array(':path' => $workspace));
 			}
 
-			$archive = $cfg->get('archive', FALSE);
+			$archive = $this->config->get('archive', FALSE);
 
 			if ($archive)
 			{
@@ -108,7 +135,7 @@ class Import {
 				}
 			}
 
-			$bad_path = Import_Helper::path($cfg->get('bad_path'));
+			$bad_path = Import_Helper::path($this->config->get('bad_path'));
 
 			if ($bad_path)
 			{
@@ -122,28 +149,25 @@ class Import {
 
 
 			// setting up Schema object
-			$schema_name = ucfirst($cfg->get('schema', self::$default_schema));
-			$schema_class = 'Import_Schema_'.$schema_name;
-			$schema = new $schema_class;
+			$schema_name = $this->config->get('schema', self::$default_schema);
+			$schema = Import_Schema::factory($schema_name);
 
-			if ( ! ($schema instanceof Import_Schema_Interface))
-			{
-				throw new Import_Exception(":schema isn't a valid import schema.",
-					array(':schema' => $schema_name));
-			}
+			Kohana::$log->add(Log::DEBUG, "Using schema :schema",
+				array(':schema' => $schema_name));
 
-			Kohana::$log->add(Log::DEBUG, "Using schema :schema", array(':schema' => $schema_name));
 
-			$cnt = 0;
+			////////////////////////////////////////////////////////////////////
+			// ETL Data
 
-			// ETL Data ########################################################
-			$channels = $schema->extract($working_copy, $cfg->get('channel_filter', FALSE));
-			$data = $schema->transform($channels);
-			$return = $schema->load($data);
+			$schema->filter = $this->config->get('channel_filter', FALSE);
+			$schema->load_logs = $this->config->get('load_logs', FALSE);
+			$schema->overwrite = $this->config->get('overwrite', TRUE);
 
-			$cnt = count($return);
+			$data = $schema->etl($working_copy);
 
-			$this->data += $return;
+			$cnt = count($data);
+
+			$this->data = array_merge($this->data, $data);
 
 
 			// Cleaning up workspace
@@ -161,7 +185,7 @@ class Import {
 			rmdir($workspace);
 
 			// Archive
-			if ($archive AND $return !== FALSE)
+			if ($archive AND $data !== FALSE)
 			{
 				copy($file_path, $file_archive);
 			}
@@ -171,25 +195,37 @@ class Import {
 				unlink($file_path);
 			}
 		}
-		catch (Exception $e)
+		catch (Kohana_Exception $e)
 		{
 
 			// copy file to the bad-Directory
 			@copy($file_path, $file_bad);
 
-			Kohana::$log->add(Log::DEBUG, "Import aborted [:i rows affected] (:file)", array(':i' => $cnt, ':file' => $file));
+			if ( ! isset($cnt))
+			{
+				$cnt = 0;
+			}
 
-			if ($cfg instanceof Kohana_Config_Group AND $cfg->get('throw_exceptions', self::$throw_exceptions))
+			Kohana::$log->add(Log::DEBUG, "Import aborted [:i rows affected] (:file)",
+				array(':i' => $cnt, ':file' => $file));
+
+			if ($this->config instanceof Kohana_Config_Group AND $this->config->get('throw_exceptions',
+					self::$throw_exceptions))
 				throw new Import_Exception("Cannot import file ':file'. :message",
 					array(':file' => $file, ':message' => $e->getMessage())
 				);
 
-			return FALSE;
+			return;
 		}
 
-		Kohana::$log->add(Log::DEBUG, "Import end [:i rows affected] (:file)", array(':i' => $cnt, ':file' => $file));
+		Kohana::$log->add(Log::DEBUG, "Import end [:i rows affected] (:file)",
+			array(':i' => $cnt, ':file' => $file));
 
-		return TRUE;
+
+		if (Kohana::$profiling)
+		{
+			Profiler::stop($token);
+		}
 	}
 
 }

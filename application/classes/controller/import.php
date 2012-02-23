@@ -6,19 +6,12 @@ defined('SYSPATH') or die('No direct script access.');
  *
  * @author Martin Zoellner <ragchuck at gmail.com>
  */
-class Controller_Import extends Controller_Ajax {
+class Controller_Import extends Controller_Base {
 
-	public function action_getfiles()
+	public function action_files()
 	{
-
-		$import_config = Kohana::$config->load('import');
-		$files = array_filter(scandir($import_config->get('path')), 'Import_Helper::filter_array_WBZIP');
-		sort($files, SORT_STRING);
-		$max_files = $import_config->get('max_files');
-		if ($max_files != 0)
-		{
-			$files = array_slice($files, 0, $max_files);
-		}
+		$import = new Import;
+		$files = $import->find_files();
 		$this->json($files);
 	}
 
@@ -30,30 +23,14 @@ class Controller_Import extends Controller_Ajax {
 		if (!$file_name)
 			throw new Exception("Argument FILE is missing");
 
-		// Be sure to only profile if it's enabled
-		if (Kohana::$profiling === TRUE)
-		{
-			// Start a new benchmark
-			$benchmark = Profiler::start('Import', __FUNCTION__);
-		}
-
+		// Import the file
 		$import = new Import;
-
-		$ok = $import->import_file($file_name);
+		$import->import_file($file_name);
 
 		$data['file'] = $file_name;
-
-		if ($ok === TRUE) {
-			$data['count'] = count($import->data);
-			foreach ($import->data as $d) {
-				$data['data'][] = $d->to_array();
-			}
-		}
-
-		if (isset($benchmark))
-		{
-			// Stop the benchmark
-			Profiler::stop($benchmark);
+		$data['count'] = count($import->data);
+		foreach ($import->data as $d) {
+			$data['data'][] = $d->to_array();
 		}
 
 

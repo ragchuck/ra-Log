@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Stock v1.0 Beta (2011-07-05)
+ * @license Highstock JS v1.0.1 (2011-10-25)
  * MooTools adapter
  *
  * (c) 2010-2011 Torstein Hønsi
@@ -8,35 +8,39 @@
  */
 
 // JSLint options:
-/*global Highcharts, Fx, $, $extend, $each, $merge, Events, Event */
+/*global Fx, $, $extend, $each, $merge, Events, Event, DOMEvent */
 
-(function() {
+(function () {
 
 var win = window,
-	legacy = !!win.$merge,
-	$extend = win.$extend || function() {
-		return Object.append.apply(Object, arguments)
+	mooVersion = win.MooTools.version.substring(0, 3), // Get the first three characters of the version number
+	legacy = mooVersion === '1.2' || mooVersion === '1.1', // 1.1 && 1.2 considered legacy, 1.3 is not.
+	legacyEvent = legacy || mooVersion === '1.3', // In versions 1.1 - 1.3 the event class is named Event, in newer versions it is named DOMEvent.
+	$extend = win.$extend || function () {
+		return Object.append.apply(Object, arguments);
 	};
 
 win.HighchartsAdapter = {
 	/**
 	 * Initialize the adapter. This is run once as Highcharts is first run.
+	 * @param {Object} pathAnim The helper object to do animations across adapters.
 	 */
-	init: function() {
+	init: function (pathAnim) {
 		var fxProto = Fx.prototype,
 			fxStart = fxProto.start,
 			morphProto = Fx.Morph.prototype,
 			morphCompute = morphProto.compute;
 
 		// override Fx.start to allow animation of SVG element wrappers
-		fxProto.start = function(from, to) {
+		/*jslint unparam: true*//* allow unused parameters in fx functions */
+		fxProto.start = function (from, to) {
 			var fx = this,
 				elem = fx.element;
 
 			// special for animating paths
 			if (from.d) {
 				//this.fromD = this.element.d.split(' ');
-				fx.paths = Highcharts.pathAnim.init(
+				fx.paths = pathAnim.init(
 					elem,
 					elem.d,
 					fx.toD
@@ -48,20 +52,20 @@ win.HighchartsAdapter = {
 		};
 
 		// override Fx.step to allow animation of SVG element wrappers
-		morphProto.compute = function(from, to, delta) {
+		morphProto.compute = function (from, to, delta) {
 			var fx = this,
 				paths = fx.paths;
 
 			if (paths) {
 				fx.element.attr(
 					'd',
-					Highcharts.pathAnim.step(paths[0], paths[1], delta, fx.toD)
+					pathAnim.step(paths[0], paths[1], delta, fx.toD)
 				);
 			} else {
 				return morphCompute.apply(fx, arguments);
 			}
 		};
-
+		/*jslint unparam: false*/
 	},
 
 	/**
@@ -78,16 +82,16 @@ win.HighchartsAdapter = {
 		if (isSVGElement && !el.setStyle) {
 			// add setStyle and getStyle methods for internal use in Moo
 			el.getStyle = el.attr;
-			el.setStyle = function() { // property value is given as array in Moo - break it down
+			el.setStyle = function () { // property value is given as array in Moo - break it down
 				var args = arguments;
 				el.attr.call(el, args[0], args[1][0]);
-			}
+			};
 			// dirty hack to trick Moo into handling el as an element wrapper
 			el.$family = el.uid = true;
 		}
 
 		// stop running animations
-		HighchartsAdapter.stop(el);
+		win.HighchartsAdapter.stop(el);
 
 		// define and run the effect
 		effect = new Fx.Morph(
@@ -118,7 +122,7 @@ win.HighchartsAdapter = {
 	 * MooTool's each function
 	 *
 	 */
-	each: function(arr, fn) {
+	each: function (arr, fn) {
 		return legacy ?
 			$each(arr, fn) :
 			arr.each(fn);
@@ -129,7 +133,7 @@ win.HighchartsAdapter = {
 	 * @param {Array} arr
 	 * @param {Function} fn
 	 */
-	map: function (arr, fn){
+	map: function (arr, fn) {
 		return arr.map(fn);
 	},
 
@@ -138,14 +142,14 @@ win.HighchartsAdapter = {
 	 * @param {Array} arr
 	 * @param {Function} fn
 	 */
-	grep: function(arr, fn) {
+	grep: function (arr, fn) {
 		return arr.filter(fn);
 	},
 
 	/**
 	 * Deep merge two objects and return a third
 	 */
-	merge: function() {
+	merge: function () {
 		var args = arguments,
 			args13 = [{}], // MooTools 1.3+
 			i = args.length,
@@ -155,12 +159,31 @@ win.HighchartsAdapter = {
 			ret = $merge.apply(null, args);
 		} else {
 			while (i--) {
-				args13[i + 1] = args[i];
+				// Boolean argumens should not be merged.
+				// JQuery explicitly skips this, so we do it here as well.
+				if (typeof args[i] !== 'boolean') {
+					args13[i + 1] = args[i];
+				}
 			}
 			ret = Object.merge.apply(Object, args13);
 		}
 
 		return ret;
+	},
+
+	/**
+	 * Extends an object with Events, if its not done
+	 */
+	extendWithEvents: function (el) {
+		// if the addEvent method is not defined, el is a custom Highcharts object
+		// like series or point
+		if (!el.addEvent) {
+			if (el.nodeName) {
+				el = $(el); // a dynamically generated node
+			} else {
+				$extend(el, new Events()); // a custom object
+			}
+		}
 	},
 
 	/**
@@ -170,47 +193,47 @@ win.HighchartsAdapter = {
 	 * @param {Function} fn Event handler
 	 */
 	addEvent: function (el, type, fn) {
-		if (typeof type == 'string') { // chart broke due to el being string, type function
+		if (typeof type === 'string') { // chart broke due to el being string, type function
 
-			if (type == 'unload') { // Moo self destructs before custom unload events
+			if (type === 'unload') { // Moo self destructs before custom unload events
 				type = 'beforeunload';
 			}
 
-			// if the addEvent method is not defined, el is a custom Highcharts object
-			// like series or point
-			if (!el.addEvent) {
-				if (el.nodeName) {
-					el = $(el); // a dynamically generated node
-				} else {
-					$extend(el, new Events()); // a custom object
-				}
-			}
+			win.HighchartsAdapter.extendWithEvents(el);
 
 			el.addEvent(type, fn);
 		}
 	},
 
-	removeEvent: function(el, type, fn) {
+	removeEvent: function (el, type, fn) {
+		win.HighchartsAdapter.extendWithEvents(el);
+
 		if (type) {
-			if (type == 'unload') { // Moo self destructs before custom unload events
+			if (type === 'unload') { // Moo self destructs before custom unload events
 				type = 'beforeunload';
 			}
 
-
-			el.removeEvent(type, fn);
+			if (fn) {
+				el.removeEvent(type, fn);
+			} else {
+				el.removeEvents(type);
+			}
+		} else {
+			el.removeEvents();
 		}
 	},
 
-	fireEvent: function(el, event, eventArguments, defaultFunction) {
-		// create an event object that keeps all functions
-		event = new Event({
+	fireEvent: function (el, event, eventArguments, defaultFunction) {
+		var eventArgs = {
 			type: event,
 			target: el
-		});
+		};
+		// create an event object that keeps all functions
+		event = legacyEvent ? new Event(eventArgs) : new DOMEvent(eventArgs);
 		event = $extend(event, eventArguments);
 		// override the preventDefault function to be able to use
 		// this for custom events
-		event.preventDefault = function() {
+		event.preventDefault = function () {
 			defaultFunction = null;
 		};
 		// if fireEvent is not available on the object, there hasn't been added
@@ -233,6 +256,6 @@ win.HighchartsAdapter = {
 			el.fx.cancel();
 		}
 	}
-}
+};
 
-})();
+}());

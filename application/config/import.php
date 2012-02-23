@@ -13,6 +13,8 @@ return array(
 	 * string	archive			path where the import files are archived, <empty> = no archiving
 	 * int		max_files		number of files to be loaded at once, 0 = no limit
 	 * array	channel_filter	array of channnels to be loaded, FALSE = no filter
+	 * bool		load_logs		enable loading of WebBox logs
+	 * bool		overwrite		enable data overwrite
 	 *
 	 */
 	'path'				=>	DOCROOT."data/import/",
@@ -21,4 +23,6 @@ return array(
 	'archive'			=>	DOCROOT."data/import/archive/",
 	'max_files'			=>	50,
 	'channel_filter'	=>	array('E-Total','Pac'),
+	'load_logs'			=>	TRUE,
+	'overwrite'			=>	FALSE,
 );

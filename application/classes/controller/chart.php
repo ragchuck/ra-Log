@@ -1,38 +1,17 @@
 <?php
 defined('SYSPATH') or die('No direct script access.');
 
-class Controller_Chart extends Controller {
+class Controller_Chart extends Controller_Base {
 
-	public function action_build()
+
+	public function action_day()
 	{
+
 		$param = $this->request->param();
-
-		// Type
-		if (array_key_exists('type', $param))
-		{
-			$type = $param['type'];
-		}
-		elseif (array_key_exists('day', $param))
-		{
-			$type = 'day';
-		}
-		elseif (array_key_exists('month', $param))
-		{
-			$type = 'month';
-		}
-		elseif (array_key_exists('year', $param))
-		{
-			$type = 'year';
-		}
-		else
-		{
-			$type = 'day';
-		}
-
 
 		$d = new Model_Data;
 		$result = $d->select()
-			->where(DB::expr('DATE(ch_datetime)'), '=', date('Y-m-d',$this->_time))
+			->where(DB::expr('DATE(ch_datetime)'), '=', date('Y-m-d',(double)$this->time))
 			->where('ch_key', '=', 'Pac')
 			->find_all();
 
@@ -43,9 +22,6 @@ class Controller_Chart extends Controller {
 			$data[] = $obj->to_array();
 		}
 
-		Fire::fb($d);
-		Fire::fb($result);
-		Fire::fb($data);
 
 		$series = array(
 			array(
@@ -55,16 +31,40 @@ class Controller_Chart extends Controller {
 			)
 		);
 
-		$chart_name = "Test";
+		$chart_name = __("Daychart");
 
-		$view = new View('chart');
-		$view->set('time', $this->_time);
-		$view->set('container_id', sha1($type.$this->_time));
-		$view->set('series', $series);
-		$view->set('chart_name', $chart_name);
-		$view->set('caption', $chart_name);
+		$view = View::factory('chart.tpl');
+		$view->chart_type = 'day';
+		$view->time= $this->time;
+		$view->container_id= sha1($this->time);
+		$view->series= $series;
+		$view->chart_name = $chart_name;
+		$view->caption = $chart_name;
 
 		$this->response->body($view);
 	}
+
+	public function action_week()
+	{
+
+	}
+
+	public function action_month()
+	{
+
+	}
+
+	public function action_year()
+	{
+
+	}
+
+	public function action_total()
+	{
+
+	}
+
+
+
 
 }

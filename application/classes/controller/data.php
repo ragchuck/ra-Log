@@ -6,7 +6,7 @@ defined('SYSPATH') or die('No direct script access.');
  *
  * @author Martin Zoellner <ragchuck at gmail.com>
  */
-class Controller_Data extends Controller_Ajax {
+class Controller_Data extends Controller_Base {
 
 	public function action_test()
 	{

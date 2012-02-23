@@ -28,3 +28,6 @@
 [submodule "modules/firephp"]
 	path = modules/firephp
 	url = git://github.com/kloopko/kohana-firephp.git
+[submodule "modules/smarty"]
+	path = modules/smarty
+	url = git://github.com/MrAnchovy/Kohana_Smarty3.git

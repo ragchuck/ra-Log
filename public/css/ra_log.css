@@ -1,0 +1,24 @@
+/*
+    Document   : ralog
+    Created on : 17.02.2012, 19:45:16
+    Author     : Martin Zoellner <ragchuck at gmail.com>
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+body {
+    padding-top:50px;
+}
+
+.brand {
+    font-weight: bolder;
+}
+.brand span#ra {
+    color:lime;
+}
+
+.footer {
+    border-top: 1px solid #E5E5E5;
+    margin-top: 45px;
+    padding: 35px 0 36px;
+}
