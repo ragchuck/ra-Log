@@ -3,9 +3,9 @@
     <head>
 	  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
-	  <title>ra_log</title>
+	  <title>ra|Log</title>
 
-	  <!--<base href="{$base_url}" />-->
+	  <base href="{$base_url}" />
 
 	  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -37,18 +37,18 @@
 		<div class="navbar-inner">
 		    <div class="container">
 			  <a class="brand" href="./">
-				<span id="ra">ra</span>log
+				<span id="ra">ra</span>|Log
 			  </a>
 
 			  <ul class="nav">
-				{*{$nav=array('./dashboard' => __("Dashboard"),'./profile' => __("System profile"))}*}
+				{*{$nav=array('./dashboard/' => __("Dashboard"),'./profile/' => __("System profile"))}*}
 				{*{foreach $nav as $l}*}
 				<li class="active">
-				    <a href="./dashboard">{__ t="Dashboard"}</a>
+				    <a href="./dashboard/">{__ t="Dashboard"}</a>
 				</li>
 				{*{/foreach}*}
 				<li>
-				    <a href="./profile">{__ t="System profile"}</a>
+				    <a href="./profile/">{__ t="System profile"}</a>
 				</li>
 			  </ul>
 			  <ul class="nav pull-right">
@@ -72,6 +72,7 @@
 		    </div>
 		</div>
 	  </nav>
+        <a name="top"></a>
 
 	  <div class="container">
 
@@ -88,7 +89,7 @@
 
 		<div class="footer">
 		    <p class="pull-right">
-			  <a href="./#">{__ t="Back to top"}</a>
+			  <a href="#top">{__ t="Back to top"}</a>
 		    </p>
 		    <p>
 			  {$helper->stats('%3$d files using %2$.1fMB in %1$.0fms')}

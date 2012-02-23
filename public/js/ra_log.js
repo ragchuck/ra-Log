@@ -35,28 +35,37 @@ var raLog = {
 
 		if( event.pathNames[0] == 'chart' ) {
 		    // Activate chart-tab
-		    $('li:not(.active) a[data-target="#'+event.pathNames[1]+'"]').tab('show');
+		    $('a[data-target="#'+event.pathNames[1]+'"]').tab('show');
+		}
+	  })
+
+	  // Fix brokan anchors
+	  $('a').on('click',function(e){
+		var href = $(this).attr('href');
+		if( href.indexOf('#') == 0 && href != '#top') {
+		    e.preventDefault();
+		    $.address.value(href.replace(/^#/,''))
 		}
 	  })
 
 	  $('.nav-tabs a[data-target]').on('show', function (e) {
-		var _tab = e.target // activated tab
-		var _target = $(_tab).data('target');
-		var _href = $(_tab).attr('href').replace(/^(#|\.)/, '');
-		console.log("tab show",_tab);
+		var $tab = $(e.target), // activated tab
+		_target = $tab.data('target'),
+		_href = $tab.attr('href').replace(/^(#|\.)/, '');
+		console.log("tab show",$tab);
 		// Check if the chart is loaded already
-		if( $(_target).data('loaded') == undefined ) {
+		if( $tab.data('loaded') == undefined ) {
 		    // Load the chart
 		    $(_target).load('.'+_href,null,function(){
-			  $(this).data('loaded',true)
+			  $tab.data('loaded',true)
 		    })
 		}
 		else {
-		     
-		}
 
-		// Add the changed chart to browser history
-		//$.address.value(_href);
+	  }
+
+	  // Add the changed chart to browser history
+	  //$.address.value(_href);
 	  })
 
 

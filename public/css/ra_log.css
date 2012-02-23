@@ -6,7 +6,7 @@
         Purpose of the stylesheet follows.
 */
 
-body {
+body > .container {
     padding-top:50px;
 }
 
