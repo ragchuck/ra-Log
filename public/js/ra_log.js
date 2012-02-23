@@ -51,6 +51,9 @@ var raLog = {
 			  $(this).data('loaded',true)
 		    })
 		}
+		else {
+		     
+		}
 
 		// Add the changed chart to browser history
 		//$.address.value(_href);
