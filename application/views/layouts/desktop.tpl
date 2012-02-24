@@ -17,7 +17,8 @@
 	  <link rel="stylesheet" href="css/bootstrap-responsive.css" />
 	  <link rel="stylesheet" href="css/ra_log.css" />
 
-	  <script type="text/javascript" src="js/jquery/jquery-1.7.1.min.js"></script>
+	  <!--<script type="text/javascript" src="js/jquery/jquery-1.7.1.min.js"></scrip>-->
+	  <script type="text/javascript" src="js/jquery/jquery-1.7.1.js"></script>
 	  <script type="text/javascript" src="js/jquery/jquery.address.js"></script>
 
 	  <script type="text/javascript" src="js/bootstrap.min.js"></script>
@@ -77,10 +78,7 @@
 	  <div class="container">
 
 		<div class="page-header">
-		    <h1>
-			  $page_title
-			  <small>Dashboard</small>
-		    </h1>
+		    {block name="page_header"}{/block}
 		</div>
 
 		<div id="content">

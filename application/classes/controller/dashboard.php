@@ -29,13 +29,6 @@ class Controller_Dashboard extends Controller_Template {
 
 	public function action_index()
 	{
-		$this->action_day();
-
-
-	}
-
-	public function action_day()
-	{
 		$this->template->chart_type = $this->chart_type;
 		$this->template->chart_types = array('day', 'week', 'month', 'year', 'total');
 
@@ -46,5 +39,6 @@ class Controller_Dashboard extends Controller_Template {
 			)
 		);
 	}
+
 
 }

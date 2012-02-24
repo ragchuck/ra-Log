@@ -2,81 +2,131 @@
  * Base
  */
 var raLog = {
+
     /**
      * initialization
      * executed when document loads
      */
     init: function(){
-	  //raLog.chart.load('day',1263682800000);
+
+
 	  $('#content')
 	  .ajaxError(function(e, jqxhr, settings, exception) {
+
+		var error,cl;
+
+		try {
+		    var phpError = $.parseJSON(jqxhr.responseText).error;
+		    console.log(phpError);
+		    switch (phpError.type) {
+			  case 'error':
+				cl = 'label-important';
+				break;
+			  case 'warning':
+				cl = 'label-warning';
+				break;
+			  case 'notice':
+				cl = 'label-info';
+				break;
+			  default:
+				cl = '';
+		    }
+
+		    error = $('<p>')
+		    .append($('<span>')
+			  .addClass("label "+cl)
+			  .text(phpError.type+"["+phpError.code+"]")
+			  .attr('title',phpError.file+':'+phpError.line))
+		    .append(' '+phpError.message)
+		}
+		catch(ex) {
+		    error = $('<p>').addClass("well").text(jqxhr.responseText);
+		}
+
 
 		$( this )
 		.prepend(
 		    $('<div>')
 		    .addClass('alert alert-block alert-error fade in')
 		    .append($('<a class="close" data-dismiss="alert" href="#">&times;</a>'))
-		    .append($('<h4>').addClass("alert-heading").text(e.type))
-		    .append($('<p>').text(exception.toString()))
-		    .append($('<p>').addClass("well").text(jqxhr.responseText))
+		    .append($('<h4>').addClass("alert-heading").text(exception.toString()))
+		    .append(error)
 		    );
 
-		console.error(exception);
+		//console.error(exception);
 		console.groupCollapsed("Exception");
 		console.log('settings:',settings);
 		console.log('event:',e);
 		console.log('jqxhr:',jqxhr);
 		console.groupEnd();
-	  });
+	  })
 
 	  // jQuery Address
-	  $.address.change(function(event){
-		console.log('address.change()',event.value);
+	  $.address.init(function(){
+		//console.log('--> address.init()');
+		if ($.address.value() == '/')
+		    $.address.value('/chart/day');
+	  })
 
+	  // Watch for hashchanges and executes the function
+	  $.address.change(function(event){
+		//console.log('--> address.change()',event.value);
+
+		// Route chart hash changes to the chart tabs
 		if( event.pathNames[0] == 'chart' ) {
-		    // Activate chart-tab
-		    $('a[data-target="#'+event.pathNames[1]+'"]').tab('show');
+		    var $tab = $('a[data-chart="'+event.pathNames[1]+'"]'),
+			  href = event.value;
+		    if($tab.parent().hasClass('active')) {
+			  raLog.chart.load();
+		    }
+		    else {
+			  // Activate chart-tab
+			  //$tab.attr('href','#'+href).tab('show');
+			  $tab.tab('show');
+		    }
 		}
 	  })
 
-	  // Fix brokan anchors
-	  $('a').on('click',function(e){
+	  // Fix broken anchors
+	  $('a').live('click',function(e){
+		//console.log("--> a.click()");
 		var href = $(this).attr('href');
-		if( href.indexOf('#') == 0 && href != '#top') {
+		if( href.indexOf('#') == 0 && href != '#top'){
 		    e.preventDefault();
 		    $.address.value(href.replace(/^#/,''))
 		}
 	  })
 
-	  $('.nav-tabs a[data-target]').on('show', function (e) {
+	  $('.nav-tabs a[data-chart]').on('show', function(e){
+		//console.log("--> tab.show()",$tab);
 		var $tab = $(e.target), // activated tab
-		_target = $tab.data('target'),
-		_href = $tab.attr('href').replace(/^(#|\.)/, '');
-		console.log("tab show",$tab);
+		    chart_type = $tab.data('chart');
+
 		// Check if the chart is loaded already
-		if( $tab.data('loaded') == undefined ) {
-		    // Load the chart
-		    $(_target).load('.'+_href,null,function(){
+		if ($tab.data('loaded')==undefined) {
+		    // Load the chart config
+		    $('#'+chart_type).load('./chartoption/get/'+chart_type,null,function(){
 			  $tab.data('loaded',true)
 		    })
 		}
 		else {
+		    console.log("tab is loaded");
+		    raLog.chart.load();
+		}
 
-	  }
-
-	  // Add the changed chart to browser history
-	  //$.address.value(_href);
 	  })
-
 
 	  raLog.chart.init();
     },
-    checkForUpdates: function(){
-	  $.get('import/getfiles',{},function(e, jqxhr, settings){
 
-		});
+    checkForUpdates: function(){
+	  $.get('import/getfiles',{},function(response, status, jqxhr){
+
+		})
     },
+
     chart : {
+
 	  init: function(){
 
 		// Set the default options
@@ -84,51 +134,56 @@ var raLog = {
 		    global: {
 			  useUTC: true
 		    }
-		});
-
-	  //		$.getScript(raLog.chart.config.highchartsUrl,function(){
-	  //		    Highcharts.setOptions(raLog.chart.config.highchartsOptions);
-	  //		});
-
+		})
 
 	  },
-	  load: function(type,t){
-		var d = new Date(),
-		p = [];
 
-		if(t!=undefined)
-		    d = new Date(t);
+	  load: function(){
+		//console.log("--> chart.load()");
+		var href = $.address.value();
+		href = href.indexOf('.')>0 ? href.replace(/\.\w*/,'.json') : href+'.json';
+		$.get('.'+href,null,raLog.chart.populate);
+	  },
 
-		if(type==undefined)
-		    type = 'day';
-	  /*
-		switch(type) {
-		    case 'day'  :p.unshift(raLog.util.n2s2(d.getDate()));
-		    case 'month':p.unshift(raLog.util.n2s2(d.getMonth()+1));
-		    case 'year' :p.unshift(d.getFullYear());break;
-		    default     :p.unshift(type);
+	  populate: function(response, status, jqxhr) {
+		//console.log("--> chart.populate()",response);
+
+		var chart = raLog.chart.charts[response.chart.type];
+
+		// Title
+		chart.setTitle(response.chart.title,response.chart.subtitle);
+
+		// Add the series to the chart
+		if (chart.series.length > 0) {
+		    $.each(response.chart.series,function(i,o){
+			  chart.series[i].setData(o.data,true,true);
+		    })
 		}
-		p.unshift('chart');
-		$.getScript(p.join('/'));*/
-	  //$.getScript('chart/day?t='+d.getTime());
+		else {
+		    $.each(response.chart.series,function(i,o){
+			  chart.addSeries(o);
+		    })
+		}
+
+		if (response.chart.series.length != chart.series.length)
+		    throw new Error("Series lenght is different.");
+
+		var $pager = $('#'+response.chart.type+' ul.pager');
+
+		$pager.find('li.previous a')
+		    .attr('href',response.pager.prev.href)
+		    .text(response.pager.prev.text);
+		$pager.find('li.next a')
+		    .attr('href',response.pager.next.href)
+		    .text(response.pager.next.text);
+
 	  },
+
 	  charts: []
-    /* Chart.options:
-		Highcharts.dateFormat('%e. %B %Y', {$time*1000|gmdate})
-		    "tooltip": {
-			  "shared": true,
-			  "crosshairs": true,
-			  "formatter": function() {
-				var s = '<b>'+ Highcharts.dateFormat('%H:%M', this.x) +'</b>';
-				$.each(this.points, function(i, point) {
-				    s += '<br/>'+ point.series.name +': '+ point.y + '';
-				});
-				return s;
-			  }
-		    }
-	   */
+
     }
 };
+
 $(document).ready(raLog.init);
 //console.log(raLog);
 

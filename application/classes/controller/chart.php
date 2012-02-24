@@ -1,23 +1,25 @@
 <?php
 defined('SYSPATH') or die('No direct script access.');
 
+
 class Controller_Chart extends Controller_Base {
 
+	public $data = array();
 
 	public function action_day()
 	{
-
 		$param = $this->request->param();
 
 		$d = new Model_Data;
-		$result = $d->select()
-			->where(DB::expr('DATE(ch_datetime)'), '=', date('Y-m-d',(double)$this->time))
+		$db_result = $d->select()
+			->where(DB::expr('DATE(ch_datetime)'), '=', date('Y-m-d', $this->time))
 			->where('ch_key', '=', 'Pac')
-			->find_all();
+			->find_all()
+			->as_array();
 
 
 		$data = array();
-		foreach ($result->as_array() as $obj)
+		foreach ($db_result as $obj)
 		{
 			$data[] = $obj->to_array();
 		}
@@ -31,17 +33,9 @@ class Controller_Chart extends Controller_Base {
 			)
 		);
 
-		$chart_name = __("Daychart");
-
-		$view = View::factory('chart.tpl');
-		$view->chart_type = 'day';
-		$view->time= $this->time;
-		$view->container_id= sha1($this->time);
-		$view->series= $series;
-		$view->chart_name = $chart_name;
-		$view->caption = $chart_name;
-
-		$this->response->body($view);
+		$this->data['chart']['title']['text'] = __("Daychart");
+		$this->data['chart']['subtitle']['text'] = strftime("%#d. %B %Y", $this->time);
+		$this->data['chart']['series'] = $series;
 	}
 
 	public function action_week()
@@ -64,7 +58,30 @@ class Controller_Chart extends Controller_Base {
 
 	}
 
+	public function after()
+	{
+		$chart_type = $this->request->action();
 
+		if ($chart_type != 'total')
+		{
+			$prev = strtotime("-1 $chart_type", $this->time);
+			$next = strtotime("+1 $chart_type", $this->time);
+			$this->data['pager'] = array(
+				'prev' => array(
+					'href' => strftime("#/chart/$chart_type/%Y/%m/%d", $prev),
+					'text' => strftime("%#d. %b %Y", $prev)
+				),
+				'next' => array(
+					'href' => strftime("#/chart/$chart_type/%Y/%m/%d", $next),
+					'text' => strftime("%#d. %b %Y", $next)
+				)
+			);
+		}
 
+		$this->data['chart']['type'] = $chart_type;
+		$this->json($this->data);
+		//$this->data['container_id'] = sha1($chart_type.$this->time);
+		parent::after();
+	}
 
 }

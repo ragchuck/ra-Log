@@ -52,6 +52,7 @@ class Controller_Base extends Controller {
 			if (FALSE !== array_search($format, array('html','json')))
 				$this->response->headers('Content-Type', 'text/' . $format);
 			else
+				//trhow new Controller_Exception_404("File not found");
 				throw new Kohana_Exception("Content-Type :f not supported.",array(':f' => $format));
 
 		parent::after();

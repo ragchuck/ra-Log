@@ -88,9 +88,15 @@ class Kohana_Exception extends Kohana_Kohana_Exception {
 				header('Content-Type: application/json; charset='.Kohana::$charset, TRUE, $http_header_status);
 
 				// Set up json object
-				$data['code'] = $code;
-				$data['type'] = $type;
-				$data['error'] = $message;
+				$data = array(
+					'error' => array(
+						'code' => $code,
+						'type' => $type,
+						'message' => $message,
+						'file' => $file,
+						'line' => $line
+					)
+				);
 				$error = json_encode($data);
 
 				// Just display the text of the exception

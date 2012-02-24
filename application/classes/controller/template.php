@@ -35,7 +35,7 @@ class Controller_Template extends Controller_Base {
 		if ($this->auto_render === TRUE)
 		{
 			// Prevent automated rendering in Ajax
-			if ( ! $this->request->is_ajax())
+			if ($this->request->param('format') != 'json')
 			{
 				// Load the template
 				$this->template = View::factory($this->template);
@@ -50,7 +50,7 @@ class Controller_Template extends Controller_Base {
 	{
 		if ($this->auto_render === TRUE)
 		{
-			if ($this->request->is_ajax() or $this->request->param('format') == 'json')
+			if ($this->request->param('format') == 'json')
 			{
 				// Serialize data as JSON
 				$this->json($this->data);
