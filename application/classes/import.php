@@ -13,7 +13,12 @@ class Import {
 	 *
 	 * @var string default schema name
 	 */
-	public static $default_schema = 'MeanPublic';
+	public static $defaults = array(
+		'schema' => 'MeanPublic',
+		'channel_filter' => FALSE,
+		'load_logs' => FALSE,
+		'overwrite' => TRUE
+	) ;
 
 	/**
 	 *
@@ -149,7 +154,7 @@ class Import {
 
 
 			// setting up Schema object
-			$schema_name = $this->config->get('schema', self::$default_schema);
+			$schema_name = $this->config->get('schema', self::$defaults['schema']);
 			$schema = Import_Schema::factory($schema_name);
 
 			Kohana::$log->add(Log::DEBUG, "Using schema :schema",
@@ -159,9 +164,9 @@ class Import {
 			////////////////////////////////////////////////////////////////////
 			// ETL Data
 
-			$schema->filter = $this->config->get('channel_filter', FALSE);
-			$schema->load_logs = $this->config->get('load_logs', FALSE);
-			$schema->overwrite = $this->config->get('overwrite', TRUE);
+			$schema->filter = $this->config->get('channel_filter', self::$defaults['channel_filter']);
+			$schema->load_logs = $this->config->get('load_logs', self::$defaults['load_logs']);
+			$schema->overwrite = $this->config->get('overwrite', self::$defaults['overwrite']);
 
 			$data = $schema->etl($working_copy);
 

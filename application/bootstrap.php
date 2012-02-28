@@ -125,7 +125,7 @@ Kohana::$config->attach(new Config_File);
  * defaults for the URI.
  */
 
-Route::set('import', 'import/file/<file>',
+Route::set('import', 'import/file(/<file>)',
 	array(
 		'file' => '[^/\\~*]+'
 	))

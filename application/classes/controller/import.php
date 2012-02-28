@@ -8,17 +8,18 @@ defined('SYSPATH') or die('No direct script access.');
  */
 class Controller_Import extends Controller_Base {
 
-	public function action_files()
+	public function action_getfiles()
 	{
+		$data = array();
 		$import = new Import;
-		$files = $import->find_files();
-		$this->json($files);
+		$data['files'] = $import->find_files();
+		$this->json($data);
 	}
 
 	public function action_import()
 	{
 
-		$file_name = $this->request->param('file');
+		$file_name = $this->request->post('file');
 
 		if (!$file_name)
 			throw new Exception("Argument FILE is missing");
@@ -27,6 +28,7 @@ class Controller_Import extends Controller_Base {
 		$import = new Import;
 		$import->import_file($file_name);
 
+		$data = array();
 		$data['file'] = $file_name;
 		$data['count'] = count($import->data);
 		foreach ($import->data as $d) {

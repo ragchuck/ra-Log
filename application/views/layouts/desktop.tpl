@@ -59,9 +59,8 @@
 					  <b class="caret"></b>
 				    </a>
 				    <ul class="dropdown-menu">
-					  <li>
-						<a href="">{__ t="Login"}</a>
-					  </li>
+					  <li><a href="#/login"><i class="icon-user"></i> {__ t="Login"}</a></li>
+					  <li><a href="#" class="prevent-default action-importstart"><i class="icon-retweet"></i> {__ t="Refresh Data"}</a></li>
 				    </ul>
 				</li>
 			  </ul>
@@ -76,6 +75,13 @@
         <a name="top"></a>
 
 	  <div class="container">
+
+		<div id="notification-center" class="well">
+		    <div class="content"></div>
+		    <div class="toggler">
+			  <a href="#" class="prevent-default" ><i class="icon-eject icon-white"></i></a>
+		    </div>
+		</div>
 
 		<div class="page-header">
 		    {block name="page_header"}{/block}

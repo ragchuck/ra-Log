@@ -37,7 +37,7 @@ class Import_Schema_MeanPublic extends Import_Schema {
 			foreach ($innerFiles as $xmlFile)
 			{
 				$xml = new SimpleXMLElement($xmlFile, NULL, true);
-				$extracts = array_merge($extracts,call_user_func($loader, $xml, $this->filter));
+				$extracts = array_merge($extracts,call_user_func($loader, $xml));
 				unset($xml);
 				unlink($xmlFile);
 			}
@@ -46,7 +46,7 @@ class Import_Schema_MeanPublic extends Import_Schema {
 		return $extracts;
 	}
 
-	protected function _load_data($xml, $filter = FALSE)
+	protected function _load_data($xml)
 	{
 		////////////////////////////////////////////////////////////////////////
 		// Extract
@@ -54,9 +54,9 @@ class Import_Schema_MeanPublic extends Import_Schema {
 		$channels = array();
 		foreach ($xml->xpath("/WebBox/MeanPublic") as $channel)
 		{
-			if ($filter)
+			if ($this->filter)
 			{
-				foreach ($filter as $cf)
+				foreach ($this->filter as $cf)
 				{
 					if (strstr($channel->Key, $cf) !== FALSE)
 					{

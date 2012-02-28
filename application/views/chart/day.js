@@ -3,14 +3,28 @@
 	  chart: {
 		renderTo: '{$container_id}',
 		events: {
-                load: raLog.chart.load
-            }
+		    load: raLog.chart.load
+		}
 	  },
 	  title: {
 		text: null
 	  },
 	  subtitle: {
 		text: null
+	  },
+	  plotOptions: {
+		area: {
+		    marker: {
+			  enabled: false,
+			  symbol: 'circle',
+			  radius: 2,
+			  states: {
+				hover: {
+				    enabled: true
+				}
+			  }
+		    }
+		}
 	  },
 	  series: [],
 	  xAxis: {
@@ -24,7 +38,7 @@
 	  },
 	  tooltip: {
 		shared: true,
-		crosshairs: true,
+		//crosshairs: true,
 		formatter: function() {
 		    var s = '<b>'+ Highcharts.dateFormat('%H:%M', this.x) +'</b>';
 		    $.each(this.points, function(i, point) {
