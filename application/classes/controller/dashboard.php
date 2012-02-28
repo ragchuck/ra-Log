@@ -10,7 +10,6 @@ defined('SYSPATH') or die('No direct script access.');
 class Controller_Dashboard extends Controller_Template {
 
 	public $chart_type = 'day';
-
 	public $template = 'dashboard.tpl';
 
 	public function before()
@@ -39,6 +38,5 @@ class Controller_Dashboard extends Controller_Template {
 			)
 		);
 	}
-
 
 }
