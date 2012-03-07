@@ -28,3 +28,5 @@ Thumbs.db
 Desktop.ini
 
 nbproject
+/application/logs/
+/application/cache/

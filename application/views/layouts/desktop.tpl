@@ -12,14 +12,17 @@
 	  <!--[if lt IE 9]>
 	  <script src="js/html5.js"></script>
 	  <![endif]-->
-
+	  {*
 	  <link rel="stylesheet" href="css/bootstrap.css" />
 	  <link rel="stylesheet" href="css/bootstrap-responsive.css" />
 	  <link rel="stylesheet" href="css/ra_log.css" />
 
 	  <!--<script type="text/javascript" src="js/jquery/jquery-1.7.1.min.js"></scrip>-->
-	  <script type="text/javascript" src="js/jquery/jquery-1.7.1.js"></script>
-	  <script type="text/javascript" src="js/jquery/jquery.address.js"></script>
+	  <!---<script type="text/javascript" src="js/jquery/jquery-1.7.1.js"></script>--->
+	  <!---<script type="text/javascript" src="js/jquery/jquery.address.js"></script>--->
+
+	  <script type="text/javascript" src="jquery/jquery-1.7.1.js"></script>
+	  <script type="text/javascript" src="jquery/jquerymx-3.2.custom.js"></script>
 
 	  <script type="text/javascript" src="js/bootstrap.min.js"></script>
 
@@ -30,7 +33,7 @@
 	  <!--<script type="text/javascript" src="js/highstock/highstock.js"></script>-->
 
 	  <script type="text/javascript" src="js/ra_log.js"></script>
-
+*}
     </head>
 
     <body>
@@ -45,11 +48,11 @@
 				{*{$nav=array('./dashboard/' => __("Dashboard"),'./profile/' => __("System profile"))}*}
 				{*{foreach $nav as $l}*}
 				<li class="active">
-				    <a href="./dashboard/">{__ t="Dashboard"}</a>
+				    <a href="#!/dashboard/">{__ t="Dashboard"}</a>
 				</li>
 				{*{/foreach}*}
 				<li>
-				    <a href="./profile/">{__ t="System profile"}</a>
+				    <a href="#!/profile/">{__ t="System profile"}</a>
 				</li>
 			  </ul>
 			  <ul class="nav pull-right">
@@ -59,8 +62,8 @@
 					  <b class="caret"></b>
 				    </a>
 				    <ul class="dropdown-menu">
-					  <li><a href="#/login"><i class="icon-user"></i> {__ t="Login"}</a></li>
-					  <li><a href="#" class="prevent-default action-importstart"><i class="icon-retweet"></i> {__ t="Refresh Data"}</a></li>
+					  <li><a href="#!/login"><i class="icon-user"></i> {__ t="Login"}</a></li>
+					  <li><a href="#!" class="prevent-default action-importstart"><i class="icon-retweet"></i> {__ t="Refresh Data"}</a></li>
 				    </ul>
 				</li>
 			  </ul>
@@ -101,6 +104,7 @@
 		</div>
 	  </div><!-- container end -->
 
+	  <script type="text/javascript" src="steal/steal.js?ra_log"></script>
     </body>
 
 </html>
