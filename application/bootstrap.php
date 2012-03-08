@@ -82,13 +82,17 @@ $dev = (Kohana::$environment === Kohana::DEVELOPMENT);
 * - boolean  caching     enable or disable internal caching                 FALSE
 */
 Kohana::init(array(
-	'base_url'	=> '/ra_log/public',
+	'base_url'	=> '/',
 	'index_file' => '',
 	'errors'	=> $dev,
 	'profile'	=> $dev,
 	'caching'	=> !$dev,
 ));
 
+/**
+ * Attach a file reader to config. Multiple readers are supported.
+ */
+Kohana::$config->attach(new Config_File);
 
 /**
 * Enable modules. Modules are referenced by a relative or absolute path.
@@ -101,9 +105,10 @@ Kohana::modules(array(
 	// 'image'      => MODPATH.'image',      // Image manipulation
 	 'orm'        => MODPATH.'orm',        // Object Relationship Mapping
 	// 'unittest'   => MODPATH.'unittest',   // Unit testing
-	// 'userguide'  => MODPATH.'userguide',  // User guide and API documentation
-	//'firephp'	=> MODPATH.'firephp',
-	'smarty'	=> MODPATH.'smarty',
+	 'userguide'  => MODPATH.'userguide',  // User guide and API documentation
+	//'smarty'	=> MODPATH.'smarty',
+	'kostache'	=> MODPATH.'kostache',
+	'firephp'	=> MODPATH.'firephp',
 ));
 
 /**
@@ -115,10 +120,6 @@ if ($dev)
 }
 
 
-/**
- * Attach a file reader to config. Multiple readers are supported.
- */
-Kohana::$config->attach(new Config_File);
 
 /**
  * Set the routes. Each route must have a minimum of a name, a URI and a set of

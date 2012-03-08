@@ -6,17 +6,12 @@ defined('SYSPATH') or die('No direct script access.');
 
 
 /**
- * Description of profile
+ * Description of desktop
  *
  * @author Martin Zoellner <ragchuck at gmail.com>
  */
-class Controller_Profile extends Controller_Template {
+class View_Layout_Profile extends View_Layout {
 
-	public $template = 'layout/profile';
 
-	public function action_index()
-	{
-
-	}
 
 }

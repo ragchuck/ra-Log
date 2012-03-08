@@ -18,7 +18,7 @@
 	url = git://github.com/kohana/auth.git
 [submodule "modules/userguide"]
 	path = modules/userguide
-	url = http://github.com/kohana/userguide.git
+	url = https://github.com/kohana/userguide.git
 [submodule "modules/cache"]
 	path = modules/cache
 	url = git://github.com/kohana/cache.git
@@ -37,3 +37,6 @@
 [submodule "public/jquery"]
 	path = public/jquery
 	url = git@github.com:jupiterjs/jquerymx.git
+[submodule "modules/kostache"]
+	path = modules/kostache
+	url = https://github.com/zombor/KOstache.git

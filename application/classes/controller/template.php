@@ -38,7 +38,7 @@ class Controller_Template extends Controller_Base {
 			if ($this->request->param('format') != 'json')
 			{
 				// Load the template
-				$this->template = View::factory($this->template);
+				$this->template = Kostache::factory($this->template);
 			}
 		}
 	}

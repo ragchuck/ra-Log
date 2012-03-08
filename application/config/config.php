@@ -2,7 +2,7 @@
 
 return array(
 	'default' => array(
-		
+
 		/**
 		 * Initialize Kohana, setting the default options.
 		 *
@@ -17,7 +17,7 @@ return array(
 		 * - boolean  caching     enable or disable internal caching                 FALSE
 		 */
 		'init' => array(
-			'base_url'  => '/ra_log/public',
+			'base_url'  => NULL,
 		),
 
 		/**

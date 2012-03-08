@@ -1,0 +1,43 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+
+		<title>ra|Log - {{title}}</title>
+
+		<base href="{{base_url}}" />
+
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+	</head>
+
+	<body>
+
+		<a name="top"></a>
+		{{> navigation}}
+
+		<div class="container">
+
+			<div id="notification-center" class="well">
+				<div class="content"></div>
+				<div class="toggler">
+					<a href="#" class="prevent-default" ><i class="icon-eject icon-white"></i></a>
+				</div>
+			</div>
+
+			<div class="page-header">
+				<h1>{{title}} <small>{{subtitle}}</small></h1>
+			</div>
+
+			<div id="content">
+				{{> content}}
+			</div>
+
+			{{> footer}}
+		</div><!-- container end -->
+
+		<script type="text/javascript" src="steal/steal.js?ra_log"></script>
+
+	</body>
+
+</html>

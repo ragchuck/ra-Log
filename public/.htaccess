@@ -5,7 +5,9 @@ SetEnv KOHANA_ENV DEVELOPMENT
 RewriteEngine On
 
 # Installation directory
-RewriteBase /ra_log/public/
+# / = subdomains routes to /ra_log/public
+# /ra_log/public = no subdomain
+#RewriteBase /
 
 # Protect hidden files from being viewed
 <Files .*>
