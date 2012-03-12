@@ -34,7 +34,7 @@ class Controller_Chart extends Controller_Base {
 		);
 
 		$this->data['chart']['title']['text'] = __("Daychart");
-		$this->data['chart']['subtitle']['text'] = strftime("%#d. %B %Y", $this->time);
+		$this->data['chart']['subtitle']['text'] = utf8_encode(strftime("%#d. %B %Y", $this->time));
 		$this->data['chart']['series'] = $series;
 	}
 
@@ -45,7 +45,7 @@ class Controller_Chart extends Controller_Base {
 
 	public function action_month()
 	{
-            
+
 	}
 
 	public function action_year()
@@ -77,6 +77,11 @@ class Controller_Chart extends Controller_Base {
 				)
 			);
 		}
+
+            // enable Browser caching
+            $this->response->headers("Cache-Control", "public, max-age=3600");
+            $this->response->headers("Last-Modified", gmdate("D, d M Y H:i:s T"));
+            $this->response->headers("Expires", gmdate("D, d M Y H:i:s T", time()+3600));
 
 		$this->data['chart']['type'] = $chart_type;
 		$this->json($this->data);

@@ -18,7 +18,9 @@ steal('jquery/controller',
                         $.get('i18n/import', null, function (response) {
                               $.extend(window.lbl, response);
                         })
-                        this.start();
+
+                        // disable importing during development
+                        //this.start();
                   },
 
                   cancel : function () {
@@ -26,7 +28,7 @@ steal('jquery/controller',
                         this.canceled = true;
                         this.$alert.removeClass('alert-info').addClass('alert-danger');
                         this.$alert.find('.progress').addClass('progress-danger');
-                        this.$alert.find('.btn-cancel').attr('disabled', 'disabled');
+                        this.$alert.find('.btn-cancel').attr('disabled', true);
                   },
 
                   start : function () {
@@ -48,8 +50,6 @@ steal('jquery/controller',
 
                               this.$alert.find('.btn-cancel').on('click', this.proxy('cancel'))
 
-                              steal.dev.log(this.$alert);
-
                               this.load_next();
                         }
                   },
@@ -57,7 +57,7 @@ steal('jquery/controller',
                   load_next : function (response) {
 
                         if (this.canceled === true) {
-                              steal.dev.log("Import.loadNext() CANCELED");
+                              steal.dev.log("Import.load_next() CANCELED");
                               this.canceled = false;
                               return;
                         }
@@ -77,14 +77,11 @@ steal('jquery/controller',
                               $.post('import/file', {file : currentFile}, this.proxy('load_next'));
                         } else {
                               this.$alert.find('.bar').css('width', '100%');
-                              this.$alert
-                                    .removeClass('alert-info')
-                                    .addClass('alert-success');
-
                               this.$alert.find('.progress').addClass('progress-success');
                               this.$alert.find('.btn-cancel').attr('disabled', true);
+                              this.$alert.removeClass('alert-info').addClass('alert-success');
 
-                              //window.setTimeout("raLog.importer.$alert.slideUp(750)", 5000);
+                              window.setTimeout("this.$alert.slideUp(750)", 5000);
                         }
                   },
             });

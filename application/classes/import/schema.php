@@ -8,9 +8,10 @@ defined('SYSPATH') or die('No direct script access.');
  */
 abstract class Import_Schema {
 
-	public $filter = FALSE;
 	public $load_logs = FALSE;
 	public $overwrite = TRUE;
+	public $ch_filter_type = 'black';
+	public $ch_filter = array();
 
 	/**
 	 * Extracts the channels from the SMA archives transforms the data from

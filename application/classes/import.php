@@ -15,7 +15,8 @@ class Import {
        */
       public static $defaults = array(
             'schema' => 'MeanPublic',
-            'channel_filter' => FALSE,
+            'ch_filter_type' => 'black',
+            'ch_filter' => array(),
             'load_logs' => FALSE,
             'overwrite' => TRUE
       );
@@ -106,6 +107,7 @@ class Import {
 
                         if (file_exists($workspace) OR mkdir($workspace))
                         {
+                              chdir($workspace);
 
                               // Create a copy to the workspace
                               $working_copy = $workspace . $file;
@@ -123,7 +125,7 @@ class Import {
                   else
                   {
                         throw new Import_Exception("Workspace does not exist or is not readable. (:path)",
-                              array(':path' => $workspace));
+                              array(':path' => $temp_path));
                   }
 
                   $archive = $this->config->get('archive', FALSE);
@@ -167,8 +169,10 @@ class Import {
                   ////////////////////////////////////////////////////////////////////
                   // ETL Data
 
-                  $schema->filter = $this->config->get('channel_filter',
-                        self::$defaults['channel_filter']);
+                  $schema->ch_filter = $this->config->get('ch_filter',
+                        self::$defaults['ch_filter']);
+                  $schema->ch_filter_type = $this->config->get('ch_filter_type',
+                        self::$defaults['ch_filter_type']);
                   $schema->load_logs = $this->config->get('load_logs',
                         self::$defaults['load_logs']);
                   $schema->overwrite = $this->config->get('overwrite',
@@ -193,6 +197,7 @@ class Import {
                   }
 
                   Kohana::$log->add(Log::DEBUG, 'Deleting temp directory.');
+                  chdir(dirname($workspace));
                   rmdir($workspace);
 
                   // Archive
@@ -201,7 +206,7 @@ class Import {
                         copy($file_path, $file_archive);
                   }
 
-                  if (Kohana::$environment !== Kohana::DEVELOPMENT)
+                  if ($this->config->get('test_load', FALSE))
                   {
                         unlink($file_path);
                   }

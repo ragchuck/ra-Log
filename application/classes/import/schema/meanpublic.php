@@ -52,18 +52,35 @@ class Import_Schema_MeanPublic extends Import_Schema {
 		// Extract
 
 		$channels = array();
+            $filter = $bool = FALSE;
+
+            if ($this->ch_filter_type === 'white' AND array_key_exists('white', $this->ch_filter)) {
+                  $bool = TRUE;
+                  $filter = $this->ch_filter['white'];
+            }
+            elseif ($this->ch_filter_type === 'black' AND array_key_exists('black', $this->ch_filter)) {
+                  $bool = FALSE;
+                  $filter = $this->ch_filter['black'];
+            }
+
 		foreach ($xml->xpath("/WebBox/MeanPublic") as $channel)
 		{
-			if ($this->filter)
+			if ($filter)
 			{
-				foreach ($this->filter as $cf)
+                        $found = false;
+
+				foreach ($filter as $cf)
 				{
 					if (strstr($channel->Key, $cf) !== FALSE)
 					{
-						array_push($channels, (array) $channel);
-						break;
+                                    $found = true;
+                                    break;
 					}
 				}
+
+                        if (($bool AND $found) OR (!$bool AND !$found)) {
+                              array_push($channels, (array) $channel);
+                        }
 			}
 			else
 			{
