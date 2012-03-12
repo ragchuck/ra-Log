@@ -32,14 +32,12 @@ class Controller_Template extends Controller_Base {
 	public function before()
 	{
 		parent::before();
+
 		if ($this->auto_render === TRUE)
 		{
-			// Prevent automated rendering in Ajax
-			if ($this->request->param('format') != 'json')
-			{
-				// Load the template
-				$this->template = Kostache::factory($this->template);
-			}
+                  // Load the template
+                  $this->template = Kostache::factory($this->template);
+                  $this->template->render_layout = !$this->is_remote();
 		}
 	}
 

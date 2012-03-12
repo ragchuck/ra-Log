@@ -1,7 +1,7 @@
 {{^dropdown}}
 <li {{#active}}class="active"{{/active}}>
 	<a href="{{href}}">
-		{{#icon}}<i class="icon-{{icon}}"></i>{{/icon}} {{text}}
+		{{#icon}}<i class="icon-{{icon}}"></i>{{/icon}}&nbsp;{{text}}
 	</a>
 </li>
 {{/dropdown}}
@@ -13,7 +13,7 @@
 	</a>
 	<ul class="dropdown-menu">
 	{{#dropdown-items}}
-		<a href="{{href}}">
+		<a href="{{href}}" {{#data}}data-{{field}}="{{value}}" {{/data}}>
 			{{#icon}}<i class="icon-{{icon}}"></i>{{/icon}}&nbsp;{{text}}
 		</a>
 	{{/dropdown-items}}

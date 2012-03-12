@@ -16,7 +16,6 @@ class Controller_Profile extends Controller_Template {
 
 	public function action_index()
 	{
-
 	}
 
 }

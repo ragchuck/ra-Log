@@ -33,12 +33,12 @@ class View_Layout extends Kostache_Layout {
 
 		return array(
 			array(
-				'href' => "#!/dashboard/",
+				'href' => "#!/dashboard",
 				'text' => __("Dashboard"),
 				'active' => ($active_controller == 'dashboard')
 			),
 			array(
-				'href' => "#!/profile/",
+				'href' => "#!/profile",
 				'text' => __("System profile"),
 				'active' => ($active_controller == 'profile')),
 		);
@@ -61,7 +61,12 @@ class View_Layout extends Kostache_Layout {
 						'href' => '#',
 						'icon' => 'retweet',
 						'text' => __("Refresh Data"),
-						'data' => array('action' => 'import_start')
+						'data' => array(
+                                          array(
+                                                'field' => 'action',
+                                                'value' => 'import_start'
+                                          )
+                                    )
 					)
 				)
 			)

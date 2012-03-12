@@ -30,7 +30,7 @@ date_default_timezone_set('Europe/Berlin');
  * @see  http://kohanaframework.org/guide/using.configuration
  * @see  http://php.net/setlocale
  */
-setlocale(LC_ALL, 'de_DE.utf-8');
+setlocale(LC_ALL, 'de_DE@euro', 'de_DE', 'deu_deu' , 'de.UTF-8', 'de_DE.UTF-8');
 
 /**
  * Enable the Kohana auto-loader.
@@ -108,7 +108,7 @@ Kohana::modules(array(
 	 'userguide'  => MODPATH.'userguide',  // User guide and API documentation
 	//'smarty'	=> MODPATH.'smarty',
 	'kostache'	=> MODPATH.'kostache',
-	'firephp'	=> MODPATH.'firephp',
+	//'firephp'	=> MODPATH.'firephp',
 ));
 
 /**
@@ -133,6 +133,15 @@ Route::set('import', 'import/file(/<file>)',
 	->defaults(array(
 		'controller' => 'import',
 		'action'	 => 'import'
+	));
+
+Route::set('view', 'view/(<template>).mustache',
+      array(
+            'template' => '[\w/]+'
+      ))
+	->defaults(array(
+		'controller' => 'view',
+		'action'     => 'get',
 	));
 
 Route::set('datetime', '<controller>(/<action>)(/<year>(/<month>(/<day>)))(.<format>)',

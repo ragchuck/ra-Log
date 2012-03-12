@@ -18,4 +18,6 @@ return array(
 	"Week" => "Woche",
 	"Day" => "Tag",
 
+      "Daychart" => "Tagesübersicht"
+
 );

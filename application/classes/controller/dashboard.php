@@ -27,14 +27,6 @@ class Controller_Dashboard extends Controller_Template {
 
 	public function action_index()
 	{
-		$this->template->chart_type = $this->chart_type;
-
-		$this->template->chart = $this->_request('datetime',
-			array(
-			'controller' => 'chart',
-			'action' => $this->chart_type,
-			)
-		);
 	}
 
 }

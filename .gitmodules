@@ -40,3 +40,6 @@
 [submodule "modules/kostache"]
 	path = modules/kostache
 	url = https://github.com/zombor/KOstache.git
+[submodule "public/mustache"]
+	path = public/mustache
+	url = git://github.com/tdreyno/mustache-javascriptmvc.git

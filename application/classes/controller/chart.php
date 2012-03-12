@@ -45,7 +45,7 @@ class Controller_Chart extends Controller_Base {
 
 	public function action_month()
 	{
-
+            
 	}
 
 	public function action_year()
@@ -68,11 +68,11 @@ class Controller_Chart extends Controller_Base {
 			$next = strtotime("+1 $chart_type", $this->time);
 			$this->data['pager'] = array(
 				'prev' => array(
-					'href' => strftime("#/chart/$chart_type/%Y/%m/%d", $prev),
+					'href' => strftime("#!/chart/$chart_type/%Y/%m/%d", $prev),
 					'text' => strftime("%#d. %b %Y", $prev)
 				),
 				'next' => array(
-					'href' => strftime("#/chart/$chart_type/%Y/%m/%d", $next),
+					'href' => strftime("#!/chart/$chart_type/%Y/%m/%d", $next),
 					'text' => strftime("%#d. %b %Y", $next)
 				)
 			);
