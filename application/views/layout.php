@@ -1,38 +1,99 @@
 <!DOCTYPE HTML>
 <html>
-	<head>
+      <head>
 
-		<title>ra|Log - <?= $title ?></title>
+            <title>ra|Log - <?= $title ?></title>
 
             <base href="<?= Kohana::$base_url ?>" />
 
-		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+            <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-	</head>
+            <link rel="stylesheet" href="assets/css/bootstrap.min.css" />
+            <link rel="stylesheet" href="assets/css/bootstrap-responsive.min.css" />
 
-	<body>
+            <link rel="stylesheet" href="assets/js/libs/backbone-forms/templates/bootstrap.css" />
 
-		<a name="top"></a>
+            <link rel="stylesheet" href="assets/css/ra_log.css" />
+      </head>
 
-		<? include Kohana::find_file('views', 'partials/nav') ?>
+      <body>
 
-		<div id="page" class="container">
+            <a name="top"></a>
 
-			<div class="page-header">
-				<h1><?= $title ?> <small><?= $subtitle ?></small></h1>
-			</div>
+            <!-- Navigation start -->
+            <nav class="navbar navbar-fixed-top">
+                  <div class="navbar-inner">
+                        <div class="container">
+                              <a class="brand" href="./">
+                                    <span id="ra">ra</span>|Log
+                              </a>
 
-			<div id="content">
-                        <?= $content ?>
-			</div>
+                              <ul class="nav">
+                                    <li class="active">
+                                          <a href="#dashboard">
+                                                <?= __("Dashboard") ?>
+                                          </a>
+                                    </li>
+                                    <li class="">
+                                          <a href="#profile">
+                                                <?= __("System profile") ?>
+                                          </a>
+                                    </li>
+                              </ul>
 
-			<? include Kohana::find_file('views', 'partials/footer') ?>
-		</div><!-- container end -->
 
-		<!--<script type="text/javascript" src="steal/steal.js?ra_log"></script>-->
+                              <ul class="nav pull-right">
+                                    <li class="dropdown">
+                                          <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                                 <?= __("Config") ?>
+                                                <b class="caret"></b>
+                                          </a>
+                                          <ul class="dropdown-menu">
+                                                <li class="">
+                                                      <a href="#" class="js-login">
+                                                            <i class="icon-user"></i>&nbsp;
+                                                             <?= __("Login") ?>
+                                                      </a>
+                                                </li>
+                                                <li class="">
+                                                      <a href="#" class="js-import-start">
+                                                            <i class="icon-retweet"></i>&nbsp;
+                                                             <?= __("Refresh Data") ?>
+                                                      </a>
+                                                </li>
+                                          </ul>
+                                    </li>
+                              </ul>
 
 
-	</body>
+                        </div>
+                  </div>
+            </nav>
+            <!-- Navigation Ende -->
+
+
+            <div id="page" class="container">
+
+                  <div class="page-header">
+                        <h1>Dashboard <small>Index</small></h1>
+                  </div>
+
+                  <div id="content-container">
+                  </div>
+
+                  <div class="footer">
+                        <p class="pull-right">
+                              <a href="#top"><?= __("Back to top") ?></a>
+                        </p>
+                        <p>
+                              <?= $stats ?>
+                        </p>
+                  </div>
+            </div><!-- container end -->
+
+            <script data-main="assets/js/main" src="assets/js/libs/require/require.js"></script>
+
+      </body>
 
 </html>

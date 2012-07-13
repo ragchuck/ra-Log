@@ -66,7 +66,7 @@ if (isset($_SERVER['KOHANA_ENV']))
 	Kohana::$environment = constant('Kohana::'.strtoupper($_SERVER['KOHANA_ENV']));
 }
 
-$dev = (Kohana::$environment === Kohana::DEVELOPMENT);
+define('IS_DEV', (Kohana::$environment === Kohana::DEVELOPMENT));
 
 /**
 * Initialize Kohana, setting the default options.
@@ -84,9 +84,9 @@ $dev = (Kohana::$environment === Kohana::DEVELOPMENT);
 Kohana::init(array(
 	'base_url'	=> '/ra_log',
 	'index_file' => '',
-	'errors'	=> $dev,
-	'profile'	=> $dev,
-	'caching'	=> !$dev,
+	'errors'	=> IS_DEV,
+	'profile'	=> IS_DEV,
+	'caching'	=> !IS_DEV,
 ));
 
 /**
@@ -106,15 +106,13 @@ Kohana::modules(array(
 	 'orm'        => MODPATH.'orm',        // Object Relationship Mapping
 	// 'unittest'   => MODPATH.'unittest',   // Unit testing
 	 'userguide'  => MODPATH.'userguide',  // User guide and API documentation
-	//'smarty'	=> MODPATH.'smarty',
-	'kostache'	=> MODPATH.'kostache',
 	//'firephp'	=> MODPATH.'firephp',
 ));
 
 /**
 * Attach the file write to logging. Multiple writers are supported.
 */
-if ($dev)
+if (IS_DEV)
 {
 	Kohana::$log->attach(new Log_File(APPPATH.'logs'));
 }

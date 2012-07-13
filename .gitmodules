@@ -28,18 +28,6 @@
 [submodule "modules/firephp"]
 	path = modules/firephp
 	url = git://github.com/kloopko/kohana-firephp.git
-[submodule "public/steal"]
-	path = public/steal
-	url = git@github.com:jupiterjs/steal.git
-[submodule "public/jquery"]
-	path = public/jquery
-	url = git@github.com:jupiterjs/jquerymx.git
-[submodule "modules/kostache"]
-	path = modules/kostache
-	url = https://github.com/zombor/KOstache.git
-[submodule "public/mustache"]
-	path = public/mustache
-	url = git://github.com/tdreyno/mustache-javascriptmvc.git
 [submodule "public/bootbox"]
 	path = public/bootbox
 	url = git://github.com/makeusabrew/bootbox.git
