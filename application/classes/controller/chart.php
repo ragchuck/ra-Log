@@ -6,9 +6,40 @@ class Controller_Chart extends Controller_Base {
 
 	public $data = array();
 
+	/**
+	 *
+	 * @var int UTC
+	 */
+	public $time;
+
+	public function before()
+	{
+		parent::before();
+
+		$param = $this->request->param();
+
+		// Extract the time
+            // Time (year is a unix timestamp)
+            if (!empty($param['year']) AND strlen($param['year']) > 4)
+            {
+                  $this->time = $param['year'];
+            }
+            elseif (!empty($param['year']))
+            {
+                  $this->time = gmmktime(0, 0, 0,
+                        Arr::get($param, 'month', 1),
+                        Arr::get($param, 'day', 1),
+                        Arr::get($param, 'year'));
+            }
+            else
+            {
+                  $this->time = time();
+            }
+	}
+
 	public function action_day()
 	{
-		$param = $this->request->param();
+		//$param = $this->request->param();
 
 		$d = new Model_Data;
 		$db_result = $d->select()
@@ -23,7 +54,6 @@ class Controller_Chart extends Controller_Base {
 		{
 			$data[] = $obj->to_array();
 		}
-
 
 		$series = array(
 			array(
@@ -60,28 +90,34 @@ class Controller_Chart extends Controller_Base {
 
 	public function after()
 	{
+
 		$chart_type = $this->request->action();
 
 		if ($chart_type != 'total')
 		{
 			$prev = strtotime("-1 $chart_type", $this->time);
 			$next = strtotime("+1 $chart_type", $this->time);
+                  
 			$this->data['pager'] = array(
 				'prev' => array(
 					'href' => strftime("#!/chart/$chart_type/%Y/%m/%d", $prev),
-					'text' => strftime("%#d. %b %Y", $prev)
+					'text' => strftime("&larr; %#d. %b %Y", $prev)
 				),
 				'next' => array(
 					'href' => strftime("#!/chart/$chart_type/%Y/%m/%d", $next),
-					'text' => strftime("%#d. %b %Y", $next)
+					'text' => strftime("%#d. %b %Y &rarr;", $next)
 				)
 			);
-		}
 
-            // enable Browser caching
-            $this->response->headers("Cache-Control", "public, max-age=3600");
-            $this->response->headers("Last-Modified", gmdate("D, d M Y H:i:s T"));
-            $this->response->headers("Expires", gmdate("D, d M Y H:i:s T", time()+3600));
+                  // cache only if current chart is present
+                  if ($next < time()) {
+                        // enable Browser caching
+                        $this->enable_browser_caching();
+                  }
+		}
+            else {
+                  $this->data['pager'] = false;
+            }
 
 		$this->data['chart']['type'] = $chart_type;
 		$this->json($this->data);

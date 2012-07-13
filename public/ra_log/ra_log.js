@@ -4,35 +4,27 @@ steal(// jQuery
 	'bootstrap/bootstrap.css',
 	'bootstrap/bootstrap-responsive.css',
 	'bootstrap/bootstrap.min.js',
+	// plugins
+	'mustache', // Templating
+      'bootbox',  // Bootbox - Twitter Bootstrap powered alert, confirm and flexible dialog boxes
 	// ra_log assets
 	'ra_log/ra_log.css',
-	'ra_log/charts',
+      'ra_log/nav',
       'ra_log/notify',
       'ra_log/import',
-      'ra_log/nav.js',
-	// plugins
-	'mustache',
+      'ra_log/charts',
 
 	function ($) {
 
 		"use strict";
 
-		// Routes;
 
-		$.route.bind('change', function (ev, attr, how, newVal, oldVal) {
-			//steal.dev.log('steallog: route changed.',arguments);
-		});
-
-            window.lbl = {};
-
-            $(window).navigation();
-            $(window).notify();
-            $(window).importr();
+            $(document).navigation();
+            $(document).notify();
+            $(document).importr();
 
 		// set up the Charts
-		$('#chart-tabs').charts();
-
-
+            $('.chart-tabs').charts();
 
 	}
 );

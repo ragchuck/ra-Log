@@ -1,5 +1,4 @@
-<?php
-defined('SYSPATH') or die('No direct script access.');
+<?php defined('SYSPATH') or die('No direct script access.');
 
 
 /**
@@ -7,11 +6,11 @@ defined('SYSPATH') or die('No direct script access.');
  *
  * @author Martin Zoellner <ragchuck at gmail.com>
  */
-class Controller_Index extends Controller_Base {
+class Controller_Index extends Controller_Template {
 
-	/*public function action_index()
+	public function action_index()
 	{
-
-	}*/
+            $this->template->content = Request::factory('dashboard')->execute()->body();
+	}
 
 }

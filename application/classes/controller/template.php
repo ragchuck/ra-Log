@@ -13,18 +13,14 @@ class Controller_Template extends Controller_Base {
 	 *
 	 * @var View
 	 */
-	public $template = 'template';
-
-	/**
-	 * @var  boolean  auto render template
-	 */
-	public $auto_render = TRUE;
+	public $template = 'simple_content';
 
 	/**
 	 *
 	 * @var Array
 	 */
 	public $data = array();
+
 
 	/**
 	 * Loads the template [View] object.
@@ -33,12 +29,7 @@ class Controller_Template extends Controller_Base {
 	{
 		parent::before();
 
-		if ($this->auto_render === TRUE)
-		{
-                  // Load the template
-                  $this->template = Kostache::factory($this->template);
-                  $this->template->render_layout = !$this->is_remote();
-		}
+            $this->template = View::factory($this->template);
 	}
 
 	/**
@@ -46,23 +37,72 @@ class Controller_Template extends Controller_Base {
 	 */
 	public function after()
 	{
-		if ($this->auto_render === TRUE)
+		if (!$this->is_remote())
 		{
-			if ($this->request->param('format') == 'json')
-			{
-				// Serialize data as JSON
-				$this->json($this->data);
-			}
-			else
-			{
-				// Aplly data to the view
-				foreach ($this->data as $key => $value)
-				{
-					$this->template->set($key, $value);
-				}
-				$this->response->body($this->template->render());
-			}
-		}
+                  $controller = Request::$initial->controller();
+                  $action = Request::$initial->action();
+
+                  View::bind_global('controller', $controller);
+
+                  $layout = View::factory('layout');
+                  $layout->set('title', __(ucfirst($controller)));
+                  $layout->set('subtitle', __(ucfirst($action)));
+
+                  $nav_items_left = array(
+                        array(
+                              'href' => "#!/dashboard",
+                              'text' => __("Dashboard"),
+                              'active' => ($controller == 'dashboard'),
+                              'class' => "js-dashboard"
+                        ),
+                        array(
+                              'href' => "#!/profile",
+                              'text' => __("System profile"),
+                              'active' => ($controller == 'profile'),
+                              'class' => "js-profile"
+                        ),
+                  );
+
+                  $layout->bind('nav_items_left', $nav_items_left);
+
+                  $nav_items_right = array(
+                        array(
+                              'href' => '#',
+                              'text' => __("Config"),
+                              'dropdown' => array(
+                                    array(
+                                          'href' => '#',
+                                          'icon' => 'user',
+                                          'text' => __("Login"),
+                                          'class' => 'js-login'
+                                    ),
+                                    array(
+                                          'href' => '#',
+                                          'icon' => 'retweet',
+                                          'text' => __("Refresh Data"),
+                                          'class' => 'js-import-start'
+                                    )
+                              )
+                        )
+                  );
+
+                  $layout->bind('nav_items_right', $nav_items_right);
+
+
+                  $stats = array(
+                        (microtime(TRUE) - KOHANA_START_TIME) * 1000,
+                        (memory_get_usage() - KOHANA_START_MEMORY) / 1048576,
+                        count(get_included_files())
+                  );
+
+                  $layout->set('stats', vsprintf('%3$d files using %2$.1f MB in %1$.0fms', $stats));
+;
+                  $layout->content = $this->template->render();
+                  $this->response->body($layout->render());
+            }
+            else {
+                  $this->response->body($this->template->render());
+            }
 		parent::after();
 	}
 

@@ -1,5 +1,4 @@
-<?php
-defined('SYSPATH') or die('No direct script access.');
+<?php defined('SYSPATH') or die('No direct script access.');
 /*
  *  @TODO Licence...
  */
@@ -12,7 +11,7 @@ defined('SYSPATH') or die('No direct script access.');
  */
 class Controller_Profile extends Controller_Template {
 
-	public $template = 'layout/profile';
+	public $template = 'profile';
 
 	public function action_index()
 	{

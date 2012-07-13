@@ -1,0 +1,9 @@
+# Protect hidden files from being viewed
+<Files .*>
+	Order Deny,Allow
+	Deny From All
+</Files>
+
+# Route to the public area
+RewriteEngine on
+RewriteRule ^$ /ra_log/public [L]

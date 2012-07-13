@@ -1,0 +1,35 @@
+<form method="post" class="login form-horizontal" action="/auth/login">
+      <div class="control-group">
+            <label class="control-label" for="username">{{lbl.username}}</label>
+            <div class="controls">
+                  <input type="text" name="username" required value="" placeholder="{{lbl.username}}" autocomplete="on">
+            </div>
+      </div>
+      <div class="control-group">
+            <label class="control-label" for="password">{{lbl.password}}</label>
+            <div class="controls">
+                  <input type="password" name="password" required value="" placeholder="{{lbl.password}}">
+            </div>
+      </div>
+      <div class="control-group">
+            <label class="control-label" for="remember">{{lbl.remember}}</label>
+            <div class="controls">
+                  <input type="checkbox" name="remember" value="1">
+            </div>
+      </div>
+
+
+      <!--
+      <fieldset class="subchck">
+            <label class="remember">
+                  <input type="checkbox" name="remember_me" value="1">
+                  <span>Angemeldet bleiben</span>
+            </label>
+      </fieldset>
+
+      <div class="divider"></div>
+      <p>
+            <a href="/auth/resend_password" class="forgot">Passwort vergessen?</a><br>
+      </p>
+      -->
+</form>

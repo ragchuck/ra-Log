@@ -82,7 +82,7 @@ $dev = (Kohana::$environment === Kohana::DEVELOPMENT);
 * - boolean  caching     enable or disable internal caching                 FALSE
 */
 Kohana::init(array(
-	'base_url'	=> '/',
+	'base_url'	=> '/ra_log',
 	'index_file' => '',
 	'errors'	=> $dev,
 	'profile'	=> $dev,
@@ -98,7 +98,7 @@ Kohana::$config->attach(new Config_File);
 * Enable modules. Modules are referenced by a relative or absolute path.
 */
 Kohana::modules(array(
-	// 'auth'       => MODPATH.'auth',       // Basic authentication
+	 'auth'       => MODPATH.'auth',       // Basic authentication
 	 'cache'      => MODPATH.'cache',      // Caching with multiple backends
 	// 'codebench'  => MODPATH.'codebench',  // Benchmarking tool
 	 'database'   => MODPATH.'database',   // Database access
@@ -161,7 +161,7 @@ Route::set('datetime', '<controller>(/<action>)(/<year>(/<month>(/<day>)))(.<for
 
 Route::set('default', '(<controller>(/<action>(/<id>)))(.<format>)')
 	->defaults(array(
-		'controller' => 'dashboard',
+		'controller' => 'index',
 		'action'     => 'index',
 	));
 

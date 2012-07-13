@@ -13,6 +13,7 @@ class Controller_View extends Controller_Base {
       public function action_get () {
             $template = $this->request->param('template');
             $filename = Kohana::find_file('templates/desktop', $template, 'mustache');
+            $this->enable_browser_caching();
 
             if ($filename) {
                   $this->response->send_file($filename);

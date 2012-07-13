@@ -4,7 +4,6 @@ steal('jquery/class',
 
             'use strict';
 
-            var d = new Date();
             // Charts Controller
             $.Controller('Charts', {
 
@@ -17,11 +16,16 @@ steal('jquery/class',
                   init : function () {
                         steal.dev.log("Controller Charts.init()");
 
-                        //$.route.ready(false);
-                        $.route("/chart/:type", this.defaults);
-                        $.route("/chart/:type/:year", this.defaults);
-                        $.route("/chart/:type/:year/:month", this.defaults);
-                        $.route("/chart/:type/:year/:month/:day", this.defaults);
+                        $.route.ready(false);
+
+                        //steal.dev.log($.route.attrs());
+                        // no hash - display default page
+                        if (!window.location.hash.substr(2).length /* bzw. !$.isEmptyObject($.route.attrs())*/) {
+                              // the below code is sometimes failing to trigger the event. Hence changing the hash manually
+                              // $.route.attrs({ "nav": "category", "page": "category"}, true);
+                              window.location.hash = $.route.url({"type": "day"});
+                        }
+                        $.route.ready(true);
                   },
 
                   "/chart/:type route" : function (a) {
@@ -40,8 +44,12 @@ steal('jquery/class',
                   activate: function (a) {
                         steal.dev.log("Controller Charts.activate()", arguments);
 
+                        // first activate the dashboard, if it's not visible
+                        $(document).navigation('activate', 'dashboard');
+
                         var chart,
                               $tab = $('a[data-chart="' + a.type + '"]');
+
                         $tab.tab('show');
 
                         if (!Chart.exists(a.type)) {
@@ -174,7 +182,12 @@ steal('jquery/class',
 
                         // get the current hash
                         var href = window.location.hash.substr(2);
-                        $.get(href + '.json', null, this.proxy('populate'));
+
+                        if (this.last_href !== href && href.length > 0) {
+                              $.get(href + '.json', null, this.proxy('populate'));
+                        }
+
+                        this.last_href = href;
                   },
 
                   populate: function (res) {

@@ -9,38 +9,6 @@ defined('SYSPATH') or die('No direct script access.');
  */
 class Controller_Base extends Controller {
 
-	/**
-	 *
-	 * @var int UTC
-	 */
-	public $time;
-
-	public function before()
-	{
-		parent::before();
-
-		$param = $this->request->param();
-		$route_name = Route::name($this->request->route());
-
-		// Extract the time
-		if ($route_name == 'datetime')
-		{
-			// Time (year is a unix timestamp
-			if (!empty($param['year']) AND strlen($param['year']) > 4)
-			{
-				$this->time = $param['year'];
-			}
-			elseif (!empty($param['year']))
-			{
-				$this->time = gmmktime(0, 0, 0, Arr::get($param, 'month', 1),
-					Arr::get($param, 'day', 1), Arr::get($param, 'year'));
-			}
-			else
-			{
-				$this->time = time();
-			}
-		}
-	}
 
 	public function after()
 	{
@@ -86,5 +54,13 @@ class Controller_Base extends Controller {
 	{
 		return ( ! $this->request->is_initial() || $this->request->is_ajax());
 	}
+
+      public function enable_browser_caching($duration = 3600)
+      {
+            // enable Browser caching
+            $this->response->headers("Cache-Control", "public, max-age=$duration");
+            $this->response->headers("Last-Modified", gmdate(DATE_RFC2822));
+            $this->response->headers("Expires", gmdate(DATE_RFC2822, time() + $duration));
+      }
 
 }

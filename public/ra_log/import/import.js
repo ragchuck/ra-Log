@@ -12,15 +12,13 @@ steal('jquery/controller',
 
                   init : function () {
                         steal.dev.log("Import.init()");
-                        $("*[data-action=import_start]").live("click", this.proxy("start"));
-
-                        // fetch labels
-                        $.get('i18n/import', null, function (response) {
-                              $.extend(window.lbl, response);
-                        })
 
                         // disable importing during development
                         //this.start();
+                  },
+
+                  ".js-import-start click" : function () {
+                        this.start();
                   },
 
                   cancel : function () {
@@ -62,27 +60,23 @@ steal('jquery/controller',
                               return;
                         }
 
-                        if (this.filesQueue.length === 0) {
-                              throw new Error("No files in queue!")
-                        }
-
-                        var currentFile = this.filesQueue[0],
-                              progress = 100 - this.filesQueue.length / this.filesCount * 100;
-
-                        this.$alert.find('.bar').css('width', progress + '%');
-
-                        this.filesProcessed.push(this.filesQueue.shift());
-
                         if (this.filesQueue.length > 0) {
+
+                              var currentFile = this.filesQueue[0],
+                                    progress = 100 - this.filesQueue.length / this.filesCount * 100;
+
+                              this.filesProcessed.push(this.filesQueue.shift());
+                              this.$alert.find('.bar').css('width', progress + '%');
+
                               $.post('import/file', {file : currentFile}, this.proxy('load_next'));
+
                         } else {
                               this.$alert.find('.bar').css('width', '100%');
                               this.$alert.find('.progress').addClass('progress-success');
                               this.$alert.find('.btn-cancel').attr('disabled', true);
                               this.$alert.removeClass('alert-info').addClass('alert-success');
-
-                              window.setTimeout("this.$alert.slideUp(750)", 5000);
+                              this.$alert.delay(5000).slideUp(750);
                         }
-                  },
+                  }
             });
       });

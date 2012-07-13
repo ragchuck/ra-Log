@@ -1,0 +1,87 @@
+
+# Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+# On branch bkp_20120713
+# Changes to be committed:
+#   (use "git reset HEAD <file>..." to unstage)
+#
+#	modified:   .gitmodules
+#	new file:   .htaccess_1
+#	new file:   .htaccess_2
+#	modified:   application/classes/controller/base.php
+#	modified:   application/classes/controller/chart.php
+#	modified:   application/classes/controller/i18n.php
+#	modified:   application/classes/controller/view.php
+#	modified:   application/classes/view/layout.php
+#	modified:   application/i18n/de.php
+#	deleted:    application/smarty_plugins/function.__.php
+#	modified:   application/templates/desktop/layout.mustache
+#	modified:   application/templates/desktop/layout/dashboard.mustache
+#	renamed:    application/templates/desktop/partials/navigation.mustache -> application/templates/desktop/partials/nav.mustache
+#	new file:   application/templates/desktop/partials/nav_item.mustache
+#	new file:   application/templates/desktop/partials/nav_item_li.mustache
+#	deleted:    application/templates/desktop/partials/navigation_item.mustache
+#	deleted:    application/views/chart.tpl
+#	deleted:    application/views/dashboard.tpl
+#	deleted:    application/views/profile.tpl
+#	new file:   index.php
+#	deleted:    modules/smarty
+#	new file:   public/bootbox
+#	modified:   public/ra_log/charts/charts.js
+#	new file:   public/ra_log/html5.js
+#	modified:   public/ra_log/import/import.js
+#	modified:   public/ra_log/import/progress.mustache
+#	deleted:    public/ra_log/nav.js
+#	new file:   public/ra_log/nav/login.mustache
+#	new file:   public/ra_log/nav/nav.js
+#	modified:   public/ra_log/ra_log.js
+#
+# Changes not staged for commit:
+#   (use "git add/rm <file>..." to update what will be committed)
+#   (use "git checkout -- <file>..." to discard changes in working directory)
+#
+#	modified:   .gitmodules
+#	modified:   .htaccess
+#	deleted:    .htaccess_2
+#	modified:   _install.php
+#	modified:   application/bootstrap.php
+#	modified:   application/classes/controller/chart.php
+#	modified:   application/classes/controller/dashboard.php
+#	modified:   application/classes/controller/i18n.php
+#	modified:   application/classes/controller/index.php
+#	modified:   application/classes/controller/profile.php
+#	modified:   application/classes/controller/template.php
+#	modified:   application/classes/import/schema/meanpublic.php
+#	modified:   application/classes/view/layout.php
+#	modified:   application/i18n/de.php
+#	modified:   application/templates/desktop/layout.mustache
+#	modified:   application/templates/desktop/layout/dashboard.mustache
+#	modified:   application/templates/desktop/partials/nav_item_li.mustache
+#	modified:   index.php
+#	modified:   public/ra_log/charts/charts.js
+#	modified:   public/ra_log/nav/login.mustache
+#	modified:   public/ra_log/nav/nav.js
+#	modified:   public/ra_log/ra_log.css
+#	modified:   public/ra_log/ra_log.js
+#
+# Untracked files:
+#   (use "git add <file>..." to include in what will be committed)
+#
+#	application/classes/BForm.php
+#	application/classes/controller/user.php
+#	application/config/auth.php
+#	application/messages/
+#	application/views/bootstrap_modal.php
+#	application/views/dashboard.php
+#	application/views/layout.php
+#	application/views/partials/
+#	application/views/profile.php
+#	application/views/simple_content.php
+#	application/views/user/
+#	css/
+#	js/
+#	public/_js/
+#	public/jquery-validation/
+#	public/jquery.dataTables.editable.js
+#	public/ra_log/md5.js
+

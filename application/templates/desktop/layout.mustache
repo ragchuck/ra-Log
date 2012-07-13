@@ -14,7 +14,8 @@
 	<body>
 
 		<a name="top"></a>
-		{{> navigation}}
+
+		{{> nav}}
 
 		<div id="page" class="container">
 
@@ -23,7 +24,9 @@
 			</div>
 
 			<div id="content">
-				{{> content}}
+                        <div id="content-{{controller}}" class="active">
+                              {{> content}}
+                        </div>
 			</div>
 
 			{{> footer}}

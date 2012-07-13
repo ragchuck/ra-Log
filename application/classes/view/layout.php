@@ -13,8 +13,9 @@ defined('SYSPATH') or die('No direct script access.');
 class View_Layout extends Kostache_Layout {
 
 	protected $_partials = array(
-		'navigation' => 'partials/navigation',
-		'navigation_item' => 'partials/navigation_item',
+		'nav' => 'partials/nav',
+		'nav_item' => 'partials/nav_item',
+		'nav_item_li' => 'partials/nav_item_li',
 		'footer' => 'partials/footer',
 	);
 
@@ -35,12 +36,15 @@ class View_Layout extends Kostache_Layout {
 			array(
 				'href' => "#!/dashboard",
 				'text' => __("Dashboard"),
-				'active' => ($active_controller == 'dashboard')
+				'active' => ($active_controller == 'dashboard'),
+                        'class' => "js-dashboard"
 			),
 			array(
 				'href' => "#!/profile",
 				'text' => __("System profile"),
-				'active' => ($active_controller == 'profile')),
+				'active' => ($active_controller == 'profile'),
+                        'class' => "js-profile"
+                  ),
 		);
 	}
 
@@ -53,20 +57,16 @@ class View_Layout extends Kostache_Layout {
 				'dropdown' => true,
 				'dropdown-items' => array(
 					array(
-						'href' => '#!/login',
+						'href' => '#',
 						'icon' => 'user',
 						'text' => __("Login"),
+                                    'class' => 'js-login'
 					),
 					array(
 						'href' => '#',
 						'icon' => 'retweet',
 						'text' => __("Refresh Data"),
-						'data' => array(
-                                          array(
-                                                'field' => 'action',
-                                                'value' => 'import_start'
-                                          )
-                                    )
+                                    'class' => 'js-import-start'
 					)
 				)
 			)
@@ -93,6 +93,11 @@ class View_Layout extends Kostache_Layout {
 
 		return vsprintf('%3$d files using %2$.1f MB in %1$.0fms', $stats);
 	}
+
+      public function controller()
+      {
+            return Request::$current->controller();
+      }
 
 	/**
 	 * Overwrite Functions and Profile
