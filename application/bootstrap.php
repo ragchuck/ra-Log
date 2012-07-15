@@ -1,19 +1,19 @@
-<?php defined('SYSPATH') or die('No direct script access.');
+<?php
+defined('SYSPATH') or die('No direct script access.');
 
 // -- Environment setup --------------------------------------------------------
-
 // Load the core Kohana class
-require SYSPATH.'classes/kohana/core'.EXT;
+require SYSPATH . 'classes/kohana/core' . EXT;
 
-if (is_file(APPPATH.'classes/kohana'.EXT))
+if (is_file(APPPATH . 'classes/kohana' . EXT))
 {
-	// Application extends the core
-	require APPPATH.'classes/kohana'.EXT;
+      // Application extends the core
+      require APPPATH . 'classes/kohana' . EXT;
 }
 else
 {
-	// Load empty core extension
-	require SYSPATH.'classes/kohana'.EXT;
+      // Load empty core extension
+      require SYSPATH . 'classes/kohana' . EXT;
 }
 
 /**
@@ -30,7 +30,7 @@ date_default_timezone_set('Europe/Berlin');
  * @see  http://kohanaframework.org/guide/using.configuration
  * @see  http://php.net/setlocale
  */
-setlocale(LC_ALL, 'de_DE@euro', 'de_DE', 'deu_deu' , 'de.UTF-8', 'de_DE.UTF-8');
+setlocale(LC_ALL, 'de_DE@euro', 'de_DE', 'deu_deu', 'de.UTF-8', 'de_DE.UTF-8');
 
 /**
  * Enable the Kohana auto-loader.
@@ -63,30 +63,30 @@ I18n::lang('de');
  */
 if (isset($_SERVER['KOHANA_ENV']))
 {
-	Kohana::$environment = constant('Kohana::'.strtoupper($_SERVER['KOHANA_ENV']));
+      Kohana::$environment = constant('Kohana::' . strtoupper($_SERVER['KOHANA_ENV']));
 }
 
 define('IS_DEV', (Kohana::$environment === Kohana::DEVELOPMENT));
 
 /**
-* Initialize Kohana, setting the default options.
-*
-* The following options are available:
-*
-* - string   base_url    path, and optionally domain, of your application   NULL
-* - string   index_file  name of your index file, usually "index.php"       index.php
-* - string   charset     internal character set used for input and output   utf-8
-* - string   cache_dir   set the internal cache directory                   APPPATH/cache
-* - boolean  errors      enable or disable error handling                   TRUE
-* - boolean  profile     enable or disable internal profiling               TRUE
-* - boolean  caching     enable or disable internal caching                 FALSE
-*/
+ * Initialize Kohana, setting the default options.
+ *
+ * The following options are available:
+ *
+ * - string   base_url    path, and optionally domain, of your application   NULL
+ * - string   index_file  name of your index file, usually "index.php"       index.php
+ * - string   charset     internal character set used for input and output   utf-8
+ * - string   cache_dir   set the internal cache directory                   APPPATH/cache
+ * - boolean  errors      enable or disable error handling                   TRUE
+ * - boolean  profile     enable or disable internal profiling               TRUE
+ * - boolean  caching     enable or disable internal caching                 FALSE
+ */
 Kohana::init(array(
-	'base_url'	=> '/ra_log',
-	'index_file' => '',
-	'errors'	=> IS_DEV,
-	'profile'	=> IS_DEV,
-	'caching'	=> !IS_DEV,
+      'base_url' => '/ra_log',
+      'index_file' => '',
+      'errors' => IS_DEV,
+      'profile' => IS_DEV,
+      'caching' => ! IS_DEV,
 ));
 
 /**
@@ -95,26 +95,26 @@ Kohana::init(array(
 Kohana::$config->attach(new Config_File);
 
 /**
-* Enable modules. Modules are referenced by a relative or absolute path.
-*/
+ * Enable modules. Modules are referenced by a relative or absolute path.
+ */
 Kohana::modules(array(
-	 'auth'       => MODPATH.'auth',       // Basic authentication
-	 'cache'      => MODPATH.'cache',      // Caching with multiple backends
-	// 'codebench'  => MODPATH.'codebench',  // Benchmarking tool
-	 'database'   => MODPATH.'database',   // Database access
-	// 'image'      => MODPATH.'image',      // Image manipulation
-	 'orm'        => MODPATH.'orm',        // Object Relationship Mapping
-	// 'unittest'   => MODPATH.'unittest',   // Unit testing
-	 'userguide'  => MODPATH.'userguide',  // User guide and API documentation
-	//'firephp'	=> MODPATH.'firephp',
+      'auth' => MODPATH . 'auth', // Basic authentication
+      'cache' => MODPATH . 'cache', // Caching with multiple backends
+      // 'codebench'  => MODPATH.'codebench',  // Benchmarking tool
+      'database' => MODPATH . 'database', // Database access
+      // 'image'      => MODPATH.'image',      // Image manipulation
+      'orm' => MODPATH . 'orm', // Object Relationship Mapping
+      // 'unittest'   => MODPATH.'unittest',   // Unit testing
+      'userguide' => MODPATH . 'userguide', // User guide and API documentation
+      'firephp' => MODPATH . 'firephp',
 ));
 
 /**
-* Attach the file write to logging. Multiple writers are supported.
-*/
+ * Attach the file write to logging. Multiple writers are supported.
+ */
 if (IS_DEV)
 {
-	Kohana::$log->attach(new Log_File(APPPATH.'logs'));
+      Kohana::$log->attach(new Log_File(APPPATH . 'logs'));
 }
 
 
@@ -123,43 +123,42 @@ if (IS_DEV)
  * Set the routes. Each route must have a minimum of a name, a URI and a set of
  * defaults for the URI.
  */
-
-Route::set('import', 'import/file(/<file>)',
-	array(
-		'file' => '[^/\\~*]+'
-	))
-	->defaults(array(
-		'controller' => 'import',
-		'action'	 => 'import'
-	));
+Route::set('import', 'import/file(/<file>)', array(
+            'file' => '[^/\\~*]+'
+      ))
+      ->defaults(array(
+            'controller' => 'import',
+            'action' => 'import'
+      ));
 
 Route::set('view', 'view/(<template>).mustache',
-      array(
+            array(
             'template' => '[\w/]+'
       ))
-	->defaults(array(
-		'controller' => 'view',
-		'action'     => 'get',
-	));
+      ->defaults(array(
+            'controller' => 'view',
+            'action' => 'get',
+      ));
 
-Route::set('datetime', '<controller>(/<action>)(/<year>(/<month>(/<day>)))(.<format>)',
-	array(
-		'controller' => 'index|dashboard|chart|table',
-		'action' => '[a-z]+',
-		'year' => '\d{4,}',
-		'month' => '\d{1,2}',
-		'day' => '\d{1,2}',
-	))
-	->defaults(array(
-		'controller' => 'index',
-		'action'     => 'index',
-		'format'	 => 'html'
-	));
+Route::set('datetime',
+            '<controller>(/<action>)(/<year>(/<month>(/<day>)))(.<format>)',
+            array(
+            'controller' => 'index|dashboard|chart|table',
+            'action' => '[a-z]+',
+            'year' => '\d{4,}',
+            'month' => '\d{1,2}',
+            'day' => '\d{1,2}',
+      ))
+      ->defaults(array(
+            'controller' => 'index',
+            'action' => 'index',
+            'format' => 'html'
+      ));
 
 
 Route::set('default', '(<controller>(/<action>(/<id>)))(.<format>)')
-	->defaults(array(
-		'controller' => 'index',
-		'action'     => 'index',
-	));
+      ->defaults(array(
+            'controller' => 'index',
+            'action' => 'index',
+      ));
 

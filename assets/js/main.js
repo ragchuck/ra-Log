@@ -1,7 +1,9 @@
 // Require.js allows configure shortcut alias
-require.config({
+requirejs.config({
 
-      appDir: '../',
+      config: {
+            baseUrl: '/ra_log'
+      },
 
       paths: {
             // system libs
@@ -44,14 +46,20 @@ require.config({
 
             'highcharts': {
                   deps: ['jquery'],
-                  exports: 'Highcharts'
+                  exports: function() {
+                        Highcharts.setOptions({
+                              global: {
+                                    useUTC : false
+                              }
+                        });
+                        return Highcharts;
+                  }
             }
       }
 
 });
 
 // initialize the App
-require(['app'], function (App) {
-
+requirejs(['app'], function(App) {
       App.initialize();
 });

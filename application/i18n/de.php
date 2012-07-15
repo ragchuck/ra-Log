@@ -23,7 +23,20 @@ return array(
 	"Week" => "Woche",
 	"Day" => "Tag",
 
+      // Chart names
       "Daychart" => "Tagesübersicht",
+
+      //
+      "Daily output" => "Tagesleistung",
+      "Week output" => "Wochenleistung",
+      "Month output" => "Monatsleistung",
+      "Year output" => "Jahresleistung",
+      "Total output" => "Gesamtleistung",
+
+      "Datetime" => "Tag/Zeit",
+
+      "Actual" => "Ist",
+      "Plan" => "Soll",
 
       // Validator Messages
 

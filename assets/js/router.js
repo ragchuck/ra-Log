@@ -10,7 +10,7 @@ define([
                         'dashboard': 'showDashboard',
                         'profile': 'showProfile',
 
-                        'chart/*type': 'showChart',
+                        'chart/*path': 'showChart',
 
                         // Default
                         '*actions': 'defaultAction'
@@ -18,13 +18,13 @@ define([
 
 
                   showDashboard: function(){
-                        dashboardView.render();
+                        dashboardView.render().showChart('day');
                   },
                   showProfile: function(){
                         profileView.render();
                   },
-                  showChart: function(){
-
+                  showChart: function(path){
+                        dashboardView.showChart(path);
                   },
                   defaultAction: function(actions){
                         console.log('No route:', actions);

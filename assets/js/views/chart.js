@@ -1,14 +1,26 @@
 define([
         'jquery',
+        'underscore',
         'backbone',
         'highcharts'
-        ], function($, Backbone, Highcharts) {
+        ], function($, _, Backbone, Highcharts) {
+
+      var chartDetailView = '\
+            <div class="pager">\
+                  <ul class="pager">\
+                        <li class="previous">\
+                              <a href="<%= pager.prev.href %>"><%= pager.prev.text %></a>\
+                        </li>\
+                        <li class="next">\
+                              <a href="<%= pager.next.href %>"><%= pager.next.text %></a>\
+                        </li>\
+                  </ul>\
+            </div>\
+            <div class="table"></div>';
 
       return Backbone.View.extend({
             chartOptions: {
-                  chart: {
-                  },
-
+                  chart: {},
                   plotOptions: {
                         area: {
                               marker: {
@@ -26,7 +38,6 @@ define([
                   title: { text: null },
                   subtitle: { text: null },
                   credits: { enabled: false },
-
                   series: {
                         data: []
                   },
@@ -39,7 +50,6 @@ define([
                               text : null
                         }
                   },
-
                   tooltip: {
                         shared: true,
                         //crosshairs: true,
@@ -55,25 +65,37 @@ define([
 
             initialize: function() {
                   _.bindAll(this);
-                  this.chartOptions = $.extend(true, {}, this.chartOptions); // deep clone
+                  this.model.bind('change', this.render);
             },
 
             render: function() {
-                  if (this.chart)
-                        this.chart.destroy();
 
-                  var options = this.chartOptions;
-                  options.chart.renderTo = this.$el[0];
+                  var options = _.clone(this.chartOptions);
+                  options = _.extend(options, this.model.toJSON());
 
-                  _.each(this.model, function(model, i) {
-                        options.series.data.push(Number(model.value));
-                        options.xAxis.categories.push(model.label);
-                  }, this);
+                  var chart = this.chart;
 
-                  console.log(options.series.data);
-                  console.log(options.xAxis.categories);
+                  if (!chart) {
 
-                  this.chart = new Highcharts.Chart(options);
+                        options.chart.renderTo = this.$el.find('.chart-container')[0];
+
+                        chart = new Highcharts.Chart(options);
+
+                        this.chart = chart;
+                  }
+                  else {
+                        // Update the chart's title
+                        chart.setTitle(options.title, options.subtitle);
+
+                        $.each(options.series, function(i, o) {
+                              chart.series[i].setData(o.data, true, true);
+                        });
+
+                  }
+
+                  // Update the chart details
+                  this.$el.find('.chart-details').html(_.template(chartDetailView, options))
+
                   return this;
             }
 
