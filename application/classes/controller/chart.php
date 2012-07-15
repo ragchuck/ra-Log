@@ -148,17 +148,24 @@ class Controller_Chart extends Controller_Base {
             {
                   case 'day':
 
-                        $actual = DB::select('e_total')
-                              ->from('v_data_etotal_by_day')
+                        $query = DB::select()
+                              ->from('v_data_by_day')
                               ->where('ch_date', '=', date('Y-m-d', $this->time))
-                              ->execute()
-                              ->get('e_total');
+                              ->execute();
+
+                        $actual = $query->get('actual');
+                        $plan = $query->get('plan');
+                        $diff = $actual - $plan;
+                        $perc = $actual / $plan;
 
                         $table[] = array(
                               __("Daily output"),
                               $this->day_max[1],
                               $this->day_max[0],
-                              $actual
+                              $actual,
+                              $plan,
+                              $diff,
+                              round($perc,2)
                         );
                   case 'week':
                         $table[] = array(
