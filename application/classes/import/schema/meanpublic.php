@@ -147,7 +147,9 @@ class Import_Schema_MeanPublic extends Import_Schema {
                               $cnt_dup ++;
                         }
                   }
-                  $arr[] = $d;
+                  // only give the W (Pac) to the client
+                  if ($d->ch_key == 'Pac')
+                        $arr[] = $d;
                   $cnt ++;
             }
 

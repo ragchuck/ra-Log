@@ -2,7 +2,7 @@ define([
       'backbone',
       'views/dashboard',
       'views/profile'
-      ], function(Backbone, dashboardView, profileView){
+      ], function(Backbone, Dashboard, Profile){
 
             var AppRouter = Backbone.Router.extend({
                   routes: {
@@ -16,29 +16,29 @@ define([
                         '*actions': 'defaultAction'
                   },
 
+                  start: function(){
+                        console.log('router start');
+                        Backbone.history.start();
+                        if (Backbone.history.fragment === '')
+                              this.navigate('dashboard', {
+                                    trigger: true
+                              });
+                  },
 
                   showDashboard: function(){
-                        dashboardView.render().showChart('day');
+                        Dashboard.render().showChart('day');
                   },
                   showProfile: function(){
-                        profileView.render();
+                        Profile.render();
                   },
                   showChart: function(path){
-                        dashboardView.showChart(path);
+                        Dashboard.showChart(path);
                   },
                   defaultAction: function(actions){
                         console.log('No route:', actions);
                   }
             });
-
-            var initialize = function(){
-                  var router = new AppRouter;
-                  Backbone.history.start();
-                  if (Backbone.history.fragment === '')
-                        router.navigate('dashboard', {trigger: true});
-            };
-            return {
-                  initialize: initialize
-            };
+            
+            return new AppRouter;
 
       });

@@ -46,20 +46,20 @@
                               <ul class="nav pull-right">
                                     <li class="dropdown">
                                           <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                                                 <?= __("Config") ?>
+                                                <?= __("Config") ?>
                                                 <b class="caret"></b>
                                           </a>
                                           <ul class="dropdown-menu">
                                                 <li class="">
                                                       <a href="#" class="js-login">
                                                             <i class="icon-user"></i>&nbsp;
-                                                             <?= __("Login") ?>
+                                                            <?= __("Login") ?>
                                                       </a>
                                                 </li>
                                                 <li class="">
                                                       <a href="#" class="js-import-start">
                                                             <i class="icon-retweet"></i>&nbsp;
-                                                             <?= __("Refresh Data") ?>
+                                                            <?= __("Refresh Data") ?>
                                                       </a>
                                                 </li>
                                           </ul>
@@ -72,6 +72,22 @@
             </nav>
             <!-- Navigation Ende -->
 
+            <div id="import">
+                  <div class="container">
+                        <p class="pull-right">
+                              <a class="js-close" href="#"><?= __("Close") ?></a>
+                        </p>
+                        <p class="info"></p>
+                        <div class="btn-group pull-right">
+                              &nbsp;
+                              <button class="btn btn-mini btn-continue"><i class="icon-play"></i></button>
+                              <button class="btn btn-mini btn-cancel"><i class="icon-stop"></i></button>
+                        </div>
+                        <div class="progress">
+                              <div class="bar"></div>
+                        </div>
+                  </div>                  
+            </div>
 
             <div id="page" class="container">
 

@@ -26,7 +26,7 @@ define([
                         return this;
                   },
 
-                  showChart : function(chartHash) {
+                  showChart : function(chartHash, callback) {
 
                         // First ender dashboard if it's not loaded
                         if (!$('.chart-tabs')[0]) this.render();
@@ -42,36 +42,39 @@ define([
                         $('a[data-chart="' + type + '"]').tab('show');
 
                         // Build a date from the hash
-                        if (typeof d[0] != 'undefined')
+                        if (d.length > 0)
                               var date = new Date(
                                           d[0],
                                           d[1] - 1 || 0,
                                           d[2] || 1
                                     );
 
-                        var chart = this.charts[type];
+                        var chart;
 
-                        if (!chart) {
+                        if (!this.charts[type]) {
 
                               // Create the chartModel
-                              var chart = new ChartModel({
+                              chart = new ChartModel({
                                     id: type,
                                     date: date
                               });
 
-                              // ... and fetch the date from the server
-                              chart.fetch();
-
                               // Set up the chart's view
                               var view = new ChartView({
                                     el: '#tab-' + type,
-                                    model: chart
+                                    model: chart,
+                                    callback: callback
                               });
 
-                              // and store the chart's reference to the dashboard
-                              this.charts[type] = chart;
+                              // Store the chart's reference to the dashboard
+                              this.charts[type] = view;
+                              
+                              // ... and fetch the data from the server
+                              chart.fetch();
                         }
                         else {
+                              this.charts[type].chart.showLoading();
+                              chart = this.charts[type].model;
                               // only set the new date and fetch data from the server
                               // the view's render function should be called automatically
                               // after the model has changed

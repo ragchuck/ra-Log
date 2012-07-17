@@ -5,6 +5,10 @@ define([
         'highcharts'
         ], function($, _, Backbone, Highcharts) {
 
+      nf = function(number, c) {
+            return  Highcharts.numberFormat(number, c, ',', '.');
+      }
+
       var chartDetailView = '\
             <div class="pager">\
                   <ul class="pager">\
@@ -16,20 +20,47 @@ define([
                         </li>\
                   </ul>\
             </div>\
-            <div class="table"></div>';
+            <div class="table">\
+                  <table class="table table-bordered table-condensed">\
+                        <% _.each(table, function(row, i) { %>\
+                        <tr>\
+                              <% if(i == 0) { %>\
+                              <td><%= row[0] %></td>\
+                              <th><%= row[1] %></th>\
+                              <th><%= row[2] %></th>\
+                              <th><%= row[3] %></th>\
+                              <th><%= row[4] %></th>\
+                              <th><%= row[5] %></th>\
+                              <th><%= row[6] %></th>\
+                              <% } else { %>\
+                              <th><%= row[0] %></th>\
+                              <td class="value"><%= nf(row[1], 2) %></td>\
+                              <td class="value"><%= row[2] %></td>\
+                              <td class="value"><%= nf(row[3], 2) %></td>\
+                              <td class="value"><%= nf(row[4], 2) %></td>\
+                              <td class="value"><%= nf(row[5], 2) %></td>\
+                              <td class="value"><%= nf(row[6] * 100, 1) %></td>\
+                              <% } %>\
+                        </tr>\
+                        <% }) %>\
+                  </table>\
+            </div>';
 
       return Backbone.View.extend({
             chartOptions: {
-                  chart: {},
+                  chart: {
+                        events: {
+                        }
+                  },
                   plotOptions: {
                         area: {
                               marker: {
-                                    enabled: false,
                                     symbol: 'circle',
-                                    radius: 2,
+                                    radius: 0,
                                     states: {
                                           hover: {
-                                                enabled: true
+                                                enabled: true,
+                                                radius: 4
                                           }
                                     }
                               }
@@ -56,7 +87,7 @@ define([
                         formatter: function() {
                               var s = '<b>' + Highcharts.dateFormat('%H:%M', this.x) + '</b>';
                               $.each(this.points, function(i, point) {
-                                    s += '<br/>' + point.series.name + ': ' + point.y + '';
+                                    s += '<br/>' + point.series.name + ': ' + Highcharts.numberFormat(point.y, 2, ',', '.') + ' W';
                               });
                               return s;
                         }
@@ -69,7 +100,6 @@ define([
             },
 
             render: function() {
-
                   var options = _.clone(this.chartOptions);
                   options = _.extend(options, this.model.toJSON());
 
@@ -78,20 +108,32 @@ define([
                   if (!chart) {
 
                         options.chart.renderTo = this.$el.find('.chart-container')[0];
-
                         chart = new Highcharts.Chart(options);
-
                         this.chart = chart;
+                        if (typeof this.callback == "function")
+                              callback();
                   }
                   else {
-                        // Update the chart's title
-                        chart.setTitle(options.title, options.subtitle);
 
-                        $.each(options.series, function(i, o) {
-                              chart.series[i].setData(o.data, true, true);
+                        // Remove all series from the chart
+                        _.each(chart.series, function(series) {
+                              series.remove(false)
                         });
 
+                        // Reset the color's counter to begin with the first color
+                        chart.counters.color = 0;
+
+                        // Add the new series to the charts
+                        _.each(options.series, function(series) {
+                              chart.addSeries(series, false);
+                        })
+                        
+                        // Update the chart's title
+                        chart.setTitle(options.title, options.subtitle);
+                        chart.redraw();
                   }
+
+                  chart.hideLoading();
 
                   // Update the chart details
                   this.$el.find('.chart-details').html(_.template(chartDetailView, options))

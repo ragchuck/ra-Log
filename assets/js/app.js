@@ -3,18 +3,39 @@ define([
       'underscore',
       'backbone',
       'router',
+      'views/import',
 
-      'backbone.forms',
+      //'backbone.forms',
       'bootstrap'
 
-      ], function($, _, Backbone, Router){
+      ], function($, _, Backbone, Router, Import){
 
-            var initialize = function(){
-                  // Pass in our Router module and call it's initialize function
-                  Router.initialize();
-            }
+            var AppView = Backbone.View.extend({
+                  
+                  el: 'body',
+                  
+                  events : {
+                        "click .js-login" : "login",
+                        "click .js-import-start" : "startImport"
+                  },
+                  
+                  // Starts the app, called in main.js
+                  start : function() {                        
+                        // initialize the router
+                        Router.start();
+                        Import.start();
+                  },
+                  
+                  login : function(event) {
+                        event.preventDefault();
+                        alert('to be implemented :]');
+                  },
+                  
+                  startImport : function(event) {
+                        event.preventDefault();
+                        Import.start();
+                  }
+            });
 
-            return {
-                  initialize: initialize
-            };
+            return new AppView;
       });

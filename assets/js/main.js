@@ -10,6 +10,11 @@ requirejs.config({
             'jquery': 'libs/jquery/jquery-min',
             'underscore': 'libs/underscore/underscore-min',
             'backbone' : 'libs/backbone/backbone-min',
+            
+            // jQuery plugins
+            'jquery.dateFormat': 'libs/jquery/jquery.dateFormat',
+            
+            // Backbone plugins
             'backbone.forms': 'libs/backbone-forms/backbone-forms.min',
 
             // external libs
@@ -28,12 +33,22 @@ requirejs.config({
       shim: {
 
             'underscore': {
-                  exports: '_'
+                  exports: function() {
+                        return _.noConflict();
+                  }
+            },
+            
+            'jquery': {
+                  exports: function() {
+                        return $.noConflict();
+                  }
             },
 
             'backbone': {
                   deps: ['underscore', 'jquery'],
-                  exports: 'Backbone'
+                  exports: function() {
+                        return Backbone.noConflict();
+                  }
             },
 
             'backbone.forms': {
@@ -61,5 +76,5 @@ requirejs.config({
 
 // initialize the App
 requirejs(['app'], function(App) {
-      App.initialize();
+      App.start();
 });

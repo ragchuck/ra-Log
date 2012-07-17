@@ -12,6 +12,12 @@ class Controller_Chart extends Controller_Base {
        */
       public $time;
 
+      /**
+       *
+       * @var array
+       */
+      public $plan;
+
       public function before ()
       {
             parent::before();
@@ -22,17 +28,79 @@ class Controller_Chart extends Controller_Base {
             // Time (year is a unix timestamp)
             if ( ! empty($param['year']) AND strlen($param['year']) > 4)
             {
-                  $this->time = $param['year'];
+                  $time = $param['year'];
             }
             elseif ( ! empty($param['year']))
             {
-                  $this->time = gmmktime(0, 0, 0, Arr::get($param, 'month', 1),
+                  $time = gmmktime(0, 0, 0, Arr::get($param, 'month', 1),
                         Arr::get($param, 'day', 1), Arr::get($param, 'year'));
             }
             else
             {
-                  $this->time = time();
+                  $time = time();
             }
+            $this->time = $time;
+
+            // Read cached plan values
+            $plan = Cache::instance()->get('plan');
+            if ( ! $plan)
+            {
+                  $plan = array();
+
+                  // @TODO: read the plan data with plant-id
+                  $result_day = DB::select()
+                        ->from('data_plan')
+                        ->execute();
+
+                  foreach ($result_day as $row)
+                  {
+                        $key = 'D' . date('md', strtotime($row['date']));
+                        $plan[$key] = $row['plan'];
+                  }
+
+                  $result_week = DB::select(
+                              array(DB::expr('WEEK(date)'), 'date'),
+                              array(DB::expr('SUM(plan)'), 'plan')
+                        )
+                        ->from('data_plan')
+                        ->group_by(DB::expr('WEEK(date)'))
+                        ->execute();
+
+                  foreach ($result_week as $row)
+                  {
+                        $key = 'W' . str_pad($row['date'], 2, '0', STR_PAD_LEFT);
+                        $plan[$key] = $row['plan'];
+                  }
+
+                  $result_month = DB::select(
+                              array(DB::expr('MONTH(date)'), 'date'),
+                              array(DB::expr('SUM(plan)'), 'plan')
+                        )
+                        ->from('data_plan')
+                        ->group_by(DB::expr('MONTH(date)'))
+                        ->execute();
+
+                  foreach ($result_month as $row)
+                  {
+                        $key = 'M' . str_pad($row['date'], 2, '0', STR_PAD_LEFT);
+                        $plan[$key] = $row['plan'];
+                  }
+
+                  $result_year = DB::select(
+                              array(DB::expr('YEAR(date)'), 'date'),
+                              array(DB::expr('SUM(plan)'), 'plan')
+                        )
+                        ->from('data_plan')
+                        ->group_by(DB::expr('YEAR(date)'))
+                        ->execute();
+
+                  $plan['Y'] = $result_year->get('plan');
+
+                  Cache::instance()->set('plan', $plan);
+            }
+
+            $this->plan = $plan;
+            //Kohana::$log->add('info', $plan);
       }
 
       public function action_day ()
@@ -44,6 +112,7 @@ class Controller_Chart extends Controller_Base {
                   ->where(DB::expr('DATE(ch_datetime)'), '=',
                         date('Y-m-d', $this->time))
                   ->where('ch_key', '=', 'Pac')
+                  ->order_by('ch_datetime')
                   ->find_all()
                   ->as_array();
 
@@ -51,15 +120,46 @@ class Controller_Chart extends Controller_Base {
             $data = array();
             $max_d = 0;
             $max_t = 0;
+            $max_i = 0;
+            $i = 0;
             foreach ($db_result as $obj)
             {
-                  $data[] = $obj->to_array();
-                  $max_d = (float) max($max_d, (float) $obj->mean);
-                  if ((float) $obj->mean == $max_d)
-                        $max_t = date('H:i', strtotime($obj->ch_datetime));
+                  $data[$i] = $obj->to_array();
+                  if ((float) $obj->mean > $max_d)
+                  {
+                        $max_d = (float) $obj->mean;
+                        $max_t = (double) strtotime($obj->ch_datetime);
+                        $max_i = $i;
+                  }
+                  $i ++;
             }
 
-            $this->day_max = array($max_t, $max_d);
+            $this->day_max = array(date('H:i', $max_t), $max_d);
+            //if ($max_d > 0) {
+            if (false) {
+                  $data[$max_i] = array(
+                        'id' => 'day_max',
+      //                  'name' => 'day_max',
+                        'x' => $max_t * 1000,
+                        'y' => $max_d,
+                        'color' => 'red',
+      //                  'dataLabels' => array(
+      //                        'enabled' => true
+      //                  ),
+                        'marker' => array(
+                              'enabled' => true,
+                              'radius' => 7,
+                              'fillColor' => 'red',
+                              'symbol' => 'diamond',
+                              'states' => array(
+                                    'hover' => array(
+                                          'radius' => 9,
+                                          'fillColor' => 'orange'
+                                    )
+                              )
+                        )
+                  );
+            }
 
             $series = array(
                   array(
@@ -124,7 +224,7 @@ class Controller_Chart extends Controller_Base {
                   if ($next < time())
                   {
                         // enable Browser caching
-                        $this->enable_browser_caching();
+                        //$this->enable_browser_caching();
                   }
             }
             else
@@ -148,13 +248,14 @@ class Controller_Chart extends Controller_Base {
             {
                   case 'day':
 
-                        $query = DB::select()
+                        $query = DB::select(array(DB::expr('SUM(actual)'), 'actual'))
                               ->from('v_data_by_day')
-                              ->where('ch_date', '=', date('Y-m-d', $this->time))
+                              ->where(DB::expr('DATE_FORMAT(ch_date,"%Y%m%d")'),
+                                    '=', strftime('%Y%m%d', $this->time))
                               ->execute();
 
-                        $actual = $query->get('actual');
-                        $plan = $query->get('plan');
+                        $actual = (float) $query->get('actual');
+                        $plan = (float) $this->plan['D' . date('md', $this->time)];
                         $diff = $actual - $plan;
                         $perc = $actual / $plan;
 
@@ -165,23 +266,83 @@ class Controller_Chart extends Controller_Base {
                               $actual,
                               $plan,
                               $diff,
-                              round($perc,2)
+                              round($perc, 2)
                         );
                   case 'week':
+
+                        $query = DB::select(array(DB::expr('SUM(actual)'), 'actual'))
+                              ->from('v_data_by_day')
+                              ->where(DB::expr('DATE_FORMAT(ch_date,"%x%v")'),
+                                    '=', date('YW', $this->time))
+                              ->execute();
+
+                        $actual = (float) $query->get('actual');
+                        $plan = (float) $this->plan['W' . date('W', $this->time)];
+                        $diff = $actual - $plan;
+                        $perc = $actual / $plan;
+
                         $table[] = array(
-                              __("Week output")
+                              __("Week output"),
+                              0,
+                              0,
+                              $actual,
+                              $plan,
+                              $diff,
+                              round($perc, 2)
                         );
                   case 'month':
+
+                        $query = DB::select(array(DB::expr('SUM(actual)'), 'actual'))
+                              ->from('v_data_by_day')
+                              ->where(DB::expr('DATE_FORMAT(ch_date,"%Y%m")'),
+                                    '=', strftime('%Y%m', $this->time))
+                              ->execute();
+
+                        $actual = (float) $query->get('actual');
+                        $plan = (float) $this->plan['M' . date('m', $this->time)];
+                        $diff = $actual - $plan;
+                        $perc = $actual / $plan;
+
                         $table[] = array(
-                              __("Month output")
+                              __("Month output"),
+                              0,
+                              0,
+                              $actual,
+                              $plan,
+                              $diff,
+                              round($perc, 2)
                         );
                   case 'year':
+
+                        $query = DB::select(array(DB::expr('SUM(actual)'), 'actual'))
+                              ->from('v_data_by_day')
+                              ->where(DB::expr('DATE_FORMAT(ch_date,"%Y")'),
+                                    '=', strftime('%Y', $this->time))
+                              ->execute();
+
+                        $actual = (float) $query->get('actual');
+                        $plan = (float) $this->plan['Y'];
+                        $diff = $actual - $plan;
+                        $perc = $actual / $plan;
+
                         $table[] = array(
-                              __("Year output")
+                              __("Year output"),
+                              0,
+                              0,
+                              $actual,
+                              $plan,
+                              $diff,
+                              round($perc, 2)
                         );
                   default:
                         $table[] = array(
-                              __("Total output")
+                              __("Total output"),
+                              0,
+                              0,
+                              0,
+                              0,
+                              0,
+                              0,
                         );
             }
 
