@@ -107,6 +107,7 @@ Kohana::modules(array(
       // 'unittest'   => MODPATH.'unittest',   // Unit testing
       'userguide' => MODPATH . 'userguide', // User guide and API documentation
       //'firephp' => MODPATH . 'firephp',
+      'backbone' => MODPATH . 'backbone',
 ));
 
 /**
@@ -123,7 +124,8 @@ if (IS_DEV)
  * Set the routes. Each route must have a minimum of a name, a URI and a set of
  * defaults for the URI.
  */
-Route::set('import', 'import/file(/<file>)', array(
+Route::set('import', 'import/file(/<file>)',
+            array(
             'file' => '[^/\\~*]+'
       ))
       ->defaults(array(
@@ -131,28 +133,32 @@ Route::set('import', 'import/file(/<file>)', array(
             'action' => 'import'
       ));
 
-Route::set('view', 'view/(<template>).mustache',
+
+Route::set('chart_root', 'chart/<id>(/<year>(/<month>(/<day>)))(.<format>)',
             array(
-            'template' => '[\w/]+'
+            'year' => '\d{4,}',
+            'month' => '\d{1,2}',
+            'day' => '\d{1,2}'
       ))
       ->defaults(array(
-            'controller' => 'view',
-            'action' => 'get',
+            'controller' => 'chart',
+            'action' => 'index',
+            'format' => 'json'
       ));
 
-Route::set('datetime',
-            '<controller>(/<action>)(/<year>(/<month>(/<day>)))(.<format>)',
+Route::set('chart_elements',
+            'chart/<controller>/<id>(/<year>(/<month>(/<day>)))(.<format>)',
             array(
-            'controller' => 'index|dashboard|chart|table',
-            'action' => '[a-z]+',
+            'controller' => 'options|series|table',
             'year' => '\d{4,}',
             'month' => '\d{1,2}',
             'day' => '\d{1,2}',
       ))
       ->defaults(array(
-            'controller' => 'index',
+            'directory' => 'chart',
+            'controller' => 'chart',
             'action' => 'index',
-            'format' => 'html'
+            'format' => 'json'
       ));
 
 

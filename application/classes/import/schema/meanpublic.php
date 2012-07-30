@@ -100,6 +100,10 @@ class Import_Schema_MeanPublic extends Import_Schema {
             $data = array();
             foreach ($channels as $channel)
             {
+                  // Don't load measurement errors
+                  if ($channel['Key'] == 'E-Total' AND $channel['Min'] == 0)
+                        continue;                  
+                  
                   $row = array();
                   $key = explode(':', $channel['Key']);
                   $row['ch_key'] = array_pop($key);
@@ -112,6 +116,9 @@ class Import_Schema_MeanPublic extends Import_Schema {
                   $row['mean'] = $channel['Mean'];
                   $row['max'] = $channel['Max'];
                   $row['last'] = $channel['Last'];
+                  
+                  $row['ch_date'] = date('Ymd', strtotime($channel['TimeStamp']));
+                  
                   array_push($data, $row);
             }
 

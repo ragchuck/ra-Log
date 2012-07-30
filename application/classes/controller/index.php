@@ -10,7 +10,6 @@ class Controller_Index extends Controller_Template {
 
 	public function action_index()
 	{
-            $this->template->content = Request::factory('dashboard')->execute()->body();
 	}
 
 }

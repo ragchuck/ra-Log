@@ -16,6 +16,7 @@ requirejs.config({
             
             // Backbone plugins
             'backbone.forms': 'libs/backbone-forms/backbone-forms.min',
+            'backbone.deep-model': 'libs/backbone-deep-model/deep-model',
 
             // external libs
             'bootstrap' : 'libs/bootstrap/bootstrap.min',
@@ -52,7 +53,11 @@ requirejs.config({
             },
 
             'backbone.forms': {
-                  deps: ['underscore', 'jquery', 'backbone']
+                  deps: ['backbone']
+            },
+            
+            'backbone.deep-model': {
+                  deps: ['backbone']
             },
 
             'bootstrap' : {

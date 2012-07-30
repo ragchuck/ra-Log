@@ -1,12 +1,11 @@
 define([
       'underscore',
       'backbone',
-      'router',
       'views/dashboard',
       
       'jquery.dateFormat'
       
-      ], function(_, Backbone, Router, Dashboard) {
+      ], function(_, Backbone, Dashboard) {
       
             var importView = Backbone.View.extend({
                   el: '#import',
@@ -44,8 +43,9 @@ define([
                         
                         // Reset progress elements
                         this.canceled = false;
-                        this.$el.slideDown(750);
-                        this.$el.find('.progress').removeClass('progress-danger').addClass('progress-info progress-striped active');
+                        this.$el.slideDown(500);
+                        this.$el.removeClass('alert-success alert-danger').addClass('alert-info');
+                        this.$el.find('.progress').removeClass('progress-danger progress-success').addClass('progress-info progress-striped active');
                         this.$el.find('.btn-cancel').attr('disabled', false);
                         this.$el.find('.btn-continue').attr('disabled', true);
                         
@@ -92,7 +92,7 @@ define([
                               }
                               
                               // Create a callback to add the new points from the processed file
-                              var _callback = function() {
+                              var _addPoints = function() {
                                           
                                     // Don't add points, which are not 'new' to the chart
                                     // This can be triggered by <code>this.load_next(this.last_response);</code>
@@ -115,28 +115,31 @@ define([
                               // Make a date from the first data-point
                               var dp = _df (response.data[0][0]);
                               
+                              // Check if the current dayChart corresponds with the loaded points
                               if (_df (dayChart.model.get('date') || 0) != dp) {
                                     // Show the chart
                                     var path = 'day/' + dp;
-                                    Dashboard.showChart(path, _callback);
-                                    Router.navigate('chart/' + path);
+                                    dayChart.on('chart:load', _addPoints);
+                                    Dashboard.showChart(path);
                               }
                               else { // Current chart is already loaded
-                                    _callback();
+                                    _addPoints();
                               }
                         }
+
 
                         if (this.filesQueue.length > 0) {
 
                               var currentFile = this.filesQueue[0],
                               progress = 100 - this.filesQueue.length / this.filesCount * 100;
 
-                              this.$el.find('.info').text(
-                                    _.template('Importing file (<%=i%>/<%=len%>): "<%=file%>"',{
-                                          'i': this.filesProcessed.length,
-                                          'len': this.filesCount,
-                                          'file': currentFile
-                                    }));
+
+                        this.$el.find('.info').text(
+                              _.template('Importing file (<%=i%>/<%=len%>): "<%=file%>"',{
+                                    'i': this.filesProcessed.length,
+                                    'len': this.filesCount,
+                                    'file': currentFile
+                              }));
 
                               this.filesProcessed.push(this.filesQueue.shift());
                               this.$el.find('.bar').css('width', progress + '%');
@@ -146,20 +149,28 @@ define([
                               }, this.load_next).error(this.load_error);
 
                         } else {
+                              this.$el.find('.info').text('Import finished. (' + this.filesProcessed.length + '/' + this.filesCount + ' files processed)');
                               this.$el.find('.bar').css('width', '100%');
-                              this.$el.find('.progress').removeClass('progress-striped active').addClass('progress-success');
+                              this.$el.find('.progress').removeClass('progress-info progress-striped active').addClass('progress-success');
                               this.$el.find('.btn-cancel').attr('disabled', true);
                               this.$el.removeClass('alert-info').addClass('alert-success');
-                              this.$el.delay(5000).slideUp(750);
+                              this.$el.delay(5000).slideUp(500);
+                              setTimeout(this.start, 5*60*1000);
                         }
                   },
                   
-                  load_error : function() {
+                  load_error : function(jXHR) {
                         
                         console.log("import aborted due error");
-                        console.log(arguments);
-                        this.cancel();
                         this.$el.find('.info').append(' --- IMPORT ABORTED!');
+                        
+                        try {
+                              var error = JSON.parse(jXHR.responseText);
+                              this.$el.find('.info').append(error.message);
+                        }
+                        catch(e) {console.log(e)};
+                        
+                        this.cancel();
                         return;
                   }
             });

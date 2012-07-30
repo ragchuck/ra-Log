@@ -25,6 +25,9 @@ return array(
 
       // Chart names
       "Daychart" => "Tagesübersicht",
+      
+      // Plot names
+      "Power" => "Leistung",
 
       //
       "Daily output" => "Tagesleistung",
@@ -56,5 +59,6 @@ return array(
 	"Please enter a value between {0} and {1}." => "Geben Sie bitten einen Wert zwischen {0} und {1}.",
 	"Please enter a value less than or equal to {0}." => "Geben Sie bitte einen Wert kleiner oder gleich {0} ein.",
 	"Please enter a value greater than or equal to {0}." => "Geben Sie bitte einen Wert größer oder gleich {0} ein.",
+      
 
 );

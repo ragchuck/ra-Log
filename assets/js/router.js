@@ -7,6 +7,7 @@ define([
             var AppRouter = Backbone.Router.extend({
                   routes: {
                         // Define some URL routes
+                        '': 'showDashboard',
                         'dashboard': 'showDashboard',
                         'profile': 'showProfile',
 
@@ -17,12 +18,17 @@ define([
                   },
 
                   start: function(){
-                        console.log('router start');
+                        //console.log('router start');
+                        var Router = this;
+                        
+                        // Listen to the Dashboards chart-change event
+                        // and update the 
+                        Dashboard.on('change:chart', function(chartHash) {
+                              if (Backbone.history.fragment != chartHash)
+                                    Router.navigate('chart/' + chartHash);
+                        });
+                        
                         Backbone.history.start();
-                        if (Backbone.history.fragment === '')
-                              this.navigate('dashboard', {
-                                    trigger: true
-                              });
                   },
 
                   showDashboard: function(){
@@ -34,8 +40,9 @@ define([
                   showChart: function(path){
                         Dashboard.showChart(path);
                   },
-                  defaultAction: function(actions){
-                        console.log('No route:', actions);
+                  
+                  defaultAction: function(action){
+                        console.log('No route:', action);
                   }
             });
             

@@ -22,11 +22,13 @@ define([
                         var compiledTemplate = _.template(dashboardTemplate, chartConfig);
                         // Append the compiled template to the content-container
                         this.$el.html(compiledTemplate);
-                        console.log('dashboardView rendered');
+                        
+                        // Reset the charts
+                        this.charts = [];
                         return this;
                   },
 
-                  showChart : function(chartHash, callback) {
+                  showChart : function(chartHash) {
 
                         // First ender dashboard if it's not loaded
                         if (!$('.chart-tabs')[0]) this.render();
@@ -48,6 +50,8 @@ define([
                                           d[1] - 1 || 0,
                                           d[2] || 1
                                     );
+                        else
+                              date = new Date();
 
                         var chart;
 
@@ -55,22 +59,29 @@ define([
 
                               // Create the chartModel
                               chart = new ChartModel({
-                                    id: type,
-                                    date: date
+                                    "id": type,
+                                    "date": date
                               });
+                              
 
                               // Set up the chart's view
                               var view = new ChartView({
                                     el: '#tab-' + type,
-                                    model: chart,
-                                    callback: callback
+                                    model: chart
+                              });
+                              
+                              
+                              chart.fetch({
+                                    success: function(){
+                                          view.render();
+                                    }
                               });
 
                               // Store the chart's reference to the dashboard
                               this.charts[type] = view;
                               
-                              // ... and fetch the data from the server
-                              chart.fetch();
+                        // ... and fetch the data from the server
+                        //chart.fetch();
                         }
                         else {
                               this.charts[type].chart.showLoading();
@@ -78,9 +89,15 @@ define([
                               // only set the new date and fetch data from the server
                               // the view's render function should be called automatically
                               // after the model has changed
-                              chart.set({'date': date, 'series': []}, {silent: true})
-                              chart.fetch();
+                              chart.set({
+                                    'date': date, 
+                                    'series': []
+                              })
+                        //chart.fetch();
                         }
+                        
+                        // Trigger an event
+                        this.trigger('change:chart', chartHash);
                   }
             });
 

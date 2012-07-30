@@ -9,7 +9,7 @@ define([
       'bootstrap'
 
       ], function($, _, Backbone, Router, Import){
-
+            
             var AppView = Backbone.View.extend({
                   
                   el: 'body',
@@ -23,7 +23,7 @@ define([
                   start : function() {                        
                         // initialize the router
                         Router.start();
-                        Import.start();
+                        //Import.start();
                   },
                   
                   login : function(event) {
