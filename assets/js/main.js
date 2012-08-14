@@ -15,12 +15,17 @@ requirejs.config({
             'jquery.dateFormat': 'libs/jquery/jquery.dateFormat',
             
             // Backbone plugins
-            'backbone.forms': 'libs/backbone-forms/backbone-forms.min',
             'backbone.deep-model': 'libs/backbone-deep-model/deep-model',
+            'backbone.forms': 'libs/backbone-forms/backbone-forms.amd.min',
+            'backbone.forms.bootstrap': 'libs/backbone-forms/templates/bootstrap',
+            'backbone.forms.default': 'libs/backbone-forms/templates/default',
 
             // external libs
             'bootstrap' : 'libs/bootstrap/bootstrap.min',
             'highcharts': 'libs/highcharts/highcharts',
+            
+            // other
+            'prettify' : 'libs/prettify/prettify',
 
             // plugins
             'text': 'libs/require/text',
@@ -48,12 +53,29 @@ requirejs.config({
             'backbone': {
                   deps: ['underscore', 'jquery'],
                   exports: function() {
+//                        var oldSync = Backbone.sync;
+//                        Backbone.sync = function(method, model, options) {
+//                              var oldError = options.error;
+//                              options.error = function() {
+//                                    console.log('error!',arguments);
+//                                    oldError.apply(this, arguments);
+//                              }
+//                              return oldSync(method, model, options);
+//                        };
                         return Backbone.noConflict();
                   }
             },
 
             'backbone.forms': {
                   deps: ['backbone']
+            },
+            
+            'backbone.forms.bootstrap': {
+                  deps: ['backbone','backbone.forms']
+            },
+            
+            'backbone.forms.default': {
+                  deps: ['backbone','backbone.forms']
             },
             
             'backbone.deep-model': {

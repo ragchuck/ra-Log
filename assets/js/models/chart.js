@@ -2,8 +2,9 @@ define([
       'backbone',
       'highcharts',
       'collections/series',
+      'models/table',
       'backbone.deep-model'
-      ], function(Backbone, Highcharts, Series) {
+      ], function(Backbone, Highcharts, Series, Table) {
 
             return Backbone.DeepModel.extend({
                   
@@ -43,12 +44,13 @@ define([
                               _self.trigger('series:' + event_name);
                         });
                         
-                        //this.chartOptions = new ChartOptions();
-                        //this.chartOptions.on("all", function(event_name){
-                        //      _self.trigger('chartOptions:' + event_name);
-                        //});
-                        //this.chartOptions.url = this.makeUrl('chart/options');
-                        //this.chartOptions.fetch();
+                        this.table = new Table;
+                        this.table.on("all", function(event_name){
+                              _self.trigger('table:' + event_name);
+                        });
+                        this.table.url = this.makeUrl('chart/table', true);
+                        this.table.fetch();
+                        
                         
                         this.on("change", function(event_name){
                               //console.log('CHART event recognized:', arguments);
@@ -59,6 +61,9 @@ define([
                               this.set("options.subtitle.text", Highcharts.dateFormat("%e. %B %Y",this.get('date')));
                               this.series.url = this.makeUrl('chart/series', true);
                               this.series.fetch();
+                              
+                              this.table.url = this.makeUrl('chart/table', true);
+                              this.table.fetch();
                         });                        
                   },
 

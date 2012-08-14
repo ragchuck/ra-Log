@@ -33,7 +33,7 @@ define([
                   tmplTable: _.template('\
                         <div class="table">\
                               <table class="table table-bordered table-condensed">\
-                                    <% _.each(table, function(row, i) { %>\
+                                    <% _.each(table.rows, function(row, i) { %>\
                                     <tr>\
                                           <% if(i == 0) { %>\
                                           <td><%= row[0] %></td>\
@@ -61,6 +61,7 @@ define([
                         _.bindAll(this);
                         //this.model.bind('change', this.render);
                         this.model.bind('series:reset', this.renderSeries);
+                        this.model.bind('table:change', this.renderTable);
                         this.model.bind('change:date', this.renderMeta)
                   },
 
@@ -121,7 +122,6 @@ define([
                               interval = this.model.get('id'),
                               options = this.model.get('options'),
                               sChartUrl = "#/chart/" + interval + "/%Y/%m/%d",
-                              sTableUrl = Highcharts.dateFormat("chart/table/" + interval + "/%Y/%m/%d", date),
                               nextDate = this.dateAdd(date, interval, 1),
                               prevDate = this.dateAdd(date, interval, -1);
                               
@@ -137,10 +137,14 @@ define([
                         })); 
                        
                         this.chart.setTitle(options.title, options.subtitle)
-                                                
-                        $.getJSON(sTableUrl + '.json', null, function(response){
-                              _self.$el.find('.chart-table').html(_self.tmplTable({table:response}));
-                        })
+                  },
+                  
+                  renderTable: function() {
+                        this.$el.find('.chart-table').html(
+                              this.tmplTable({
+                                    table: this.model.table.attributes
+                              })
+                        );
                   },
                   
                   dateAdd: function( objDate, sInterval, iNum) {

@@ -13,9 +13,9 @@ define([
                   events: {
                         'click .btn-cancel' : 'cancel',
                         'click .btn-continue' : 'continue_load',
-                        'click .js-close' : function() {
-                              this.$el.slideUp(750)
-                        }
+//                        'click .js-close' : function() {
+//                              this.$el.slideUp(750)
+//                        }
                   },                 
                   
                   filesQueue: [],
@@ -120,7 +120,7 @@ define([
                                     // Show the chart
                                     var path = 'day/' + dp;
                                     dayChart.on('chart:load', _addPoints);
-                                    Dashboard.showChart(path);
+                                    Dashboard.show(path);
                               }
                               else { // Current chart is already loaded
                                     _addPoints();

@@ -1,8 +1,9 @@
 define([
       'backbone',
       'views/dashboard',
-      'views/profile'
-      ], function(Backbone, Dashboard, Profile){
+      'views/profile',
+      'views/config'
+      ], function(Backbone, Dashboard, Profile, Config){
 
             var AppRouter = Backbone.Router.extend({
                   routes: {
@@ -10,6 +11,8 @@ define([
                         '': 'showDashboard',
                         'dashboard': 'showDashboard',
                         'profile': 'showProfile',
+                        'config': 'showConfig',
+                        'config/:key': 'showConfig',
 
                         'chart/*path': 'showChart',
 
@@ -19,26 +22,29 @@ define([
 
                   start: function(){
                         //console.log('router start');
-                        var Router = this;
+                        var _self = this;
                         
                         // Listen to the Dashboards chart-change event
-                        // and update the 
+                        // and update the fragment
                         Dashboard.on('change:chart', function(chartHash) {
                               if (Backbone.history.fragment != chartHash)
-                                    Router.navigate('chart/' + chartHash);
+                                    _self.navigate('chart/' + chartHash);
                         });
                         
                         Backbone.history.start();
                   },
 
                   showDashboard: function(){
-                        Dashboard.render().showChart('day');
+                        Dashboard.render().show('day');
                   },
                   showProfile: function(){
                         Profile.render();
                   },
+                  showConfig: function(key){
+                        Config.show(key);
+                  },
                   showChart: function(path){
-                        Dashboard.showChart(path);
+                        Dashboard.show(path);
                   },
                   
                   defaultAction: function(action){

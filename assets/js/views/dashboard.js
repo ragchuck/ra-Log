@@ -3,32 +3,51 @@ define([
       'underscore',
       'backbone',
 
-      'text!templates/dashboard.html',
-      'json!/ra_log/config/charts.json',
+      'json!/ra_log/config/list/charts.json',
       'views/chart',
       'models/chart'
-      ], function($, _, Backbone, dashboardTemplate, chartConfig, ChartView, ChartModel){
+      ], function($, _, Backbone, chartConfig, ChartView, ChartModel){
             //console.log(chartConfig);
             var dashboardView = Backbone.View.extend({
 
                   // Selector of the DOM-element where the dashboard is placed
                   el: '#content-container',
 
-                  charts: {},
+                  charts: [],
+                  
+                  template: _.template('\
+                        <div class="chart-tabs tabbable tabs-right">\
+                              <ul class="nav nav-tabs">\
+                                    <% _.each (chartTypes, function(name, type){ %>\
+                                          <li>\
+                                                <a href="#chart/<%= type %>" data-chart="<%= type %>" data-target="#tab-<%= type %>"><%= name %></a>\
+                                          </li>\
+                                    <% }); %>\
+                              </ul>\
+                              <div class="tab-content">\
+                                    <% _.each (chartTypes, function(name, type){ %>\
+                                          <div class="tab-pane" id="tab-<%= type %>">\
+                                                <div class="chart-container"></div>\
+                                                <div class="chart-pager"></div>\
+                                                <div class="chart-table"></div>\
+                                          </div>\
+                                    <% }); %>\
+                              </div>\
+                        </div>'),
 
                   render : function() {
                         $('.nav li.active').removeClass('active');
                         $('.nav li:has(a[href=#dashboard])').addClass('active');
-                        var compiledTemplate = _.template(dashboardTemplate, chartConfig);
+                        
                         // Append the compiled template to the content-container
-                        this.$el.html(compiledTemplate);
+                        this.$el.html(this.template({chartTypes:chartConfig.options}));
                         
                         // Reset the charts
                         this.charts = [];
                         return this;
                   },
 
-                  showChart : function(chartHash) {
+                  show : function(chartHash) {
 
                         // First ender dashboard if it's not loaded
                         if (!$('.chart-tabs')[0]) this.render();
@@ -41,7 +60,7 @@ define([
                         var type = d.shift();
 
                         // Show the (twitter)Bootstrap tab
-                        $('a[data-chart="' + type + '"]').tab('show');
+                        $('.chart-tabs a[data-chart="' + type + '"]').tab('show');
 
                         // Build a date from the hash
                         if (d.length > 0)

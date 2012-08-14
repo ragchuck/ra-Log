@@ -23,6 +23,17 @@ body > .container {
       padding: 35px 0 36px;
 }
 
+.popable {
+      border-bottom: 1px dotted #999999;
+      cursor: help;
+}
+
+#import-ch_filter {
+      column-count: 3;
+      -webkit-column-count: 3;
+      -moz-column-count: 3;
+}
+
 .table .value {
       text-align: right;
 }
@@ -36,6 +47,21 @@ body > .container {
       margin-top: 40px;
 }
 
+body .logged-in,
+body .acl-login,
+body .acl-admin,
+body.logged-in .logged-out {
+      display: none !important;
+}
+
+body.logged-in .logged-in,
+body.acl-login .acl-login,
+body.acl-admin .acl-admin {
+      display: block !important;
+}
+
+.ajax-error pre.source { margin: 1em 0 0em; padding: 0.4em; background: #eee; line-height: 1.2em; }
+.ajax-error pre.source li.highlight { background: lightyellow; }
 /*
 #notification-center {
     width: 600px;

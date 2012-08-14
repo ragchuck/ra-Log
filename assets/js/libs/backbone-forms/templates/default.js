@@ -7,26 +7,48 @@
  * - "data-type" attributes are required.
  * - The main placeholder tags such as the following are required: fieldsets, fields
  */
-;(function() {
-  var Form = Backbone.Form;
+;
+(function() {
+      
+      //DEPENDENCIES
+      //Global object (window in the browser)
+      var root = this;
+
+      var $, _, Backbone;
+
+      //CommonJS
+      if (typeof require !== 'undefined') {
+            $ = require('jquery');
+            _ = require('underscore');
+            Backbone = require('backbone');
+      }
+
+      //Browser
+      else {
+            $ = root.jQuery;
+            _ = root._;
+            Backbone = root.Backbone;
+      }
+      
+      var Form = Backbone.Form;
 
   
-  //DEFAULT TEMPLATES
-  Form.setTemplates({
+      //DEFAULT TEMPLATES
+      Form.setTemplates({
     
-    //HTML
-    form: '\
+            //HTML
+            form: '\
       <form class="bbf-form">{{fieldsets}}</form>\
     ',
     
-    fieldset: '\
+            fieldset: '\
       <fieldset>\
         <legend>{{legend}}</legend>\
         <ul>{{fields}}</ul>\
       </fieldset>\
     ',
     
-    field: '\
+            field: '\
       <li class="bbf-field">\
         <label for="{{id}}">{{title}}</label>\
         <div class="bbf-editor">{{editor}}</div>\
@@ -34,7 +56,7 @@
       </li>\
     ',
 
-    nestedField: '\
+            nestedField: '\
       <li class="bbf-field" title="{{title}}">\
         <label for="{{id}}">{{title}}</label>\
         <div class="bbf-editor">{{editor}}</div>\
@@ -42,21 +64,21 @@
       </li>\
     ',
 
-    list: '\
+            list: '\
       <div class="bbf-list">\
         <ul>{{items}}</ul>\
         <div class="bbf-actions"><button data-action="add">Add</div>\
       </div>\
     ',
 
-    listItem: '\
+            listItem: '\
       <li>\
         <button data-action="remove" class="bbf-remove">x</button>\
         <div class="bbf-editor-container">{{editor}}</div>\
       </li>\
     ',
 
-    date: '\
+            date: '\
       <div class="bbf-date">\
         <select data-type="date" class="bbf-date">{{dates}}</select>\
         <select data-type="month" class="bbf-month">{{months}}</select>\
@@ -64,7 +86,7 @@
       </div>\
     ',
 
-    dateTime: '\
+            dateTime: '\
       <div class="bbf-datetime">\
         <div class="bbf-date-container">{{date}}</div>\
         <select data-type="hour">{{hours}}</select>\
@@ -73,17 +95,17 @@
       </div>\
     ',
 
-    'list.Modal': '\
+            'list.Modal': '\
       <div class="bbf-list-modal">\
         {{summary}}\
       </div>\
     '
-  }, {
+      }, {
 
-    //CLASSNAMES
-    error: 'bbf-error'
+            //CLASSNAMES
+            error: 'bbf-error'
 
-  });
+      });
 
 
 })();

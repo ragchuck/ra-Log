@@ -3,14 +3,14 @@ define([
       'underscore',
       'backbone',
 
-      'text!templates/profile.html',
-
-      ], function($, _, Backbone, profileTemplate){
-            //console.log(chartConfig);
-            var profileView = Backbone.View.extend({
+      ], function($, _, Backbone){
+            
+             var profileView = Backbone.View.extend({
 
                   // Selector of the DOM-element where the dashboard is placed
                   el: '#content-container',
+                  
+                  template: _.template('here comes the profile'),
 
                   render : function() {
                         $('.nav li.active').removeClass('active');
@@ -18,10 +18,10 @@ define([
 
                         //var compiledTemplate = _.template(profileView, {});
                         // Append the compiled template to the content-container
-                        this.$el.html(profileTemplate);
-                        console.log('profileView rendered');
+                        this.$el.html(this.template());
+                        //console.log('profileView rendered');
                   }
             });
-
+            
             return new profileView;
       });
