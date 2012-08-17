@@ -1,4 +1,5 @@
-define([
+define(
+      [
       'jquery',
       'underscore',
       'backbone',
@@ -9,10 +10,9 @@ define([
 
       'bootstrap',
       'prettify'
-
       ], function($, _, Backbone, Router, Auth, Import, __){
-                        
-                        
+            
+
             var AppView = Backbone.View.extend({
                   
                   el: 'body',
@@ -25,23 +25,12 @@ define([
                   
                   initialize: function() {
                         _.bindAll(this);
-                        var _self = this;
-                        Auth.user.on('login:success', function(){
-                              _self.$el.addClass('logged-in')
-                        });
-                        Auth.user.on('logout:success', function(){
-                              _self.$el.removeClass('logged-in')
-                        });
-                        this.$el.ajaxError(this.ajaxError);
+                        var _self = this;                        
+                        
+                        // register ajaxError handler
+                        _self.$el.ajaxError(_self.ajaxError);
                   },
                   
-                  // Starts the app, called in main.js
-                  start: function() {                        
-                        // initialize the router
-                        Router.start();
-                        //Import.start();
-                        prettyPrint();
-                  },
                   
                   login: function(event) {
                         event.preventDefault();
@@ -66,26 +55,26 @@ define([
                               phpError = $.parseJSON(jqxhr.responseText).error;
                               console.log(phpError);
                               switch (phpError.type) {
-                              case 'error':
-                                    cl = 'label-important';
-                                    break;
-                              case 'warning':
-                                    cl = 'label-warning';
-                                    break;
-                              case 'notice':
-                                    cl = 'label-info';
-                                    break;
-                              default:
-                                    cl = '';
+                                    case 'error':
+                                          cl = 'label-important';
+                                          break;
+                                    case 'warning':
+                                          cl = 'label-warning';
+                                          break;
+                                    case 'notice':
+                                          cl = 'label-info';
+                                          break;
+                                    default:
+                                          cl = '';
                               }
 
                               error = $('<p>')
-                                    .append($('<span>')
-                                          .addClass("label " + cl)
-                                          .text(phpError.type + "[" + phpError.code + "]")
-                                          .attr('title', phpError.file + ':' + phpError.line))
-                                    .append(' ' + phpError.message)
-                                    .append(phpError.source);
+                              .append($('<span>')
+                                    .addClass("label " + cl)
+                                    .text(phpError.type + "[" + phpError.code + "]")
+                                    .attr('title', phpError.file + ':' + phpError.line))
+                              .append(' ' + phpError.message)
+                              .append(phpError.source);
                         } catch (ex) {
                               error = $('<pre>').html(jqxhr.responseText);
                         }
@@ -103,6 +92,28 @@ define([
                         prettyPrint();
                   }
             });
+            
+            
+            var App = function(){   
+                  var App = this;
+                  
+                  // initialize the router
+                  Router.start();
+                  //Import.start();
+                  prettyPrint();
+                  
+                  App.view = new AppView;
+                  
+                  Auth.user.on('login:success', function(){
+                        App.view.$el.addClass('logged-in')
+                  });
+                  Auth.user.on('logout:success', function(){
+                        App.view.$el.removeClass('logged-in')
+                  });
 
-            return new AppView;
+                  // wake up user
+                  Auth.user.live();
+            };
+
+            return new App;
       });

@@ -23,6 +23,9 @@ if ( true or ! $channels = Cache::instance()->get('schema.channels'))
 
 
 return array(
+      'front' => array(
+            
+      ),
       'import' => array(
             'path' => array(
                   'type' => 'Text',
@@ -55,7 +58,7 @@ return array(
                   'options' => array(
                         array('val' => 'none', 'label' => __('no filter')),
                         array('val' => 'black', 'label' => __('black')),
-                        array('val' => 'whtie', 'label' => __('white')),
+                        array('val' => 'white', 'label' => __('white')),
                   ),
                   'help' => __('Filter Type:<br>WHITE = only the given list channels will be loaded<br>BLACK = all channels that are not in the list')
             ),

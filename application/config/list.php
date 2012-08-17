@@ -3,15 +3,15 @@ defined('SYSPATH') or die('No direct access allowed.');
 
 return array(
       'charts' => array(
-            'day' => __('Day'),
-            'week' => __('Week'),
-            'month' => __('Month'),
-            'year' => __('Year'),
-            'total' => __('Total'),
+            array('key' => 'day', 'value' => __('Day')),
+            array('key' => 'week', 'value' => __('Week')),
+            array('key' => 'month', 'value' => __('Month')),
+            array('key' => 'year', 'value' => __('Year')),
+            array('key' => 'total', 'value' => __('Total')),
       ),
       'configs' => array(
-            'front' => __('Front'),
-            'import' => __('Import'),
+            array('key' => 'front', 'value' => __('Frontend')),
+            array('key' => 'import', 'value' => __('Import')),
       )
 );
 

@@ -25,6 +25,67 @@
                         </div>
                   </div>
             </script>
+            
+            <script id="tmpl-ajax-error" type="text/template">
+                  <nav class="navbar navbar-fixed-top">
+                        <div class="navbar-inner">
+                              <div class="container">
+                                    <a class="brand" href="./">
+                                          <span id="ra">ra</span>|Log
+                                    </a>
+
+                                    <ul class="nav">
+                                          <% _.each(main, function(item){ %>
+                                          <li>
+                                                <a href="<%= item.href %>">
+                                                      <%= item.text %>
+                                                </a>
+                                          </li>
+                                          <% }); %>
+                                    </ul>
+
+
+                                    <ul class="nav pull-right">
+                                          <li class="dropdown">
+                                                <a href="#config" class="dropdown-toggle" data-toggle="dropdown">
+                                                      <?= __("Meta") ?>
+                                                      <b class="caret"></b>
+                                                </a>
+                                                <ul class="dropdown-menu">
+                                                      <li class="">
+                                                            <a href="#" class="js-login logged-out">
+                                                                  <i class="icon-user"></i>&nbsp;
+                                                                  <?= __("Login") ?>
+                                                            </a>
+                                                      </li>
+                                                      <li class="">
+                                                            <a href="#" class="js-logout logged-in">
+                                                                  <i class="icon-user"></i>&nbsp;
+                                                                  <?= __("Logout") ?>
+                                                            </a>
+                                                      </li>
+                                                      <li class="">
+                                                            <a href="#" class="js-import-start logged-in">
+                                                                  <i class="icon-refresh"></i>&nbsp;
+                                                                  <?= __("Refresh Data") ?>
+                                                            </a>
+                                                      </li>
+                                                      <li class="logged-in acl-admin">
+                                                            <a href="#config">
+                                                                  <i class="icon-cog"></i>&nbsp;
+                                                                  <?= __("Configuration") ?>
+                                                            </a>
+                                                      </li>
+                                                </ul>
+                                          </li>
+                                    </ul>
+
+
+                              </div>
+                        </div>
+                  </nav>
+            </script>
+            
       </head>
       <body>
             <a name="top"></a>

@@ -1,6 +1,8 @@
 // Require.js allows configure shortcut alias
 requirejs.config({
-
+      
+      deps: ['app'],
+      
       config: {
             baseUrl: '/ra_log'
       },
@@ -53,15 +55,6 @@ requirejs.config({
             'backbone': {
                   deps: ['underscore', 'jquery'],
                   exports: function() {
-//                        var oldSync = Backbone.sync;
-//                        Backbone.sync = function(method, model, options) {
-//                              var oldError = options.error;
-//                              options.error = function() {
-//                                    console.log('error!',arguments);
-//                                    oldError.apply(this, arguments);
-//                              }
-//                              return oldSync(method, model, options);
-//                        };
                         return Backbone.noConflict();
                   }
             },
@@ -99,9 +92,4 @@ requirejs.config({
             }
       }
 
-});
-
-// initialize the App
-requirejs(['app'], function(App) {
-      App.start();
 });

@@ -12,6 +12,7 @@ body > .container {
 
 .brand {
       font-weight: bolder;
+      text-shadow: #fff 0px 0px 7px;
 }
 .brand span#ra {
       color:lime;

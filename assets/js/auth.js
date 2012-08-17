@@ -39,7 +39,6 @@ define([
                   url: 'auth/login',
                   initialize: function() {
                         _.bindAll(this);
-                        this.live();
                   },
                   logged_in: function() {
                         var id = this.get('id');

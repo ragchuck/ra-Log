@@ -12,9 +12,14 @@ defined('SYSPATH') or die('No direct script access.');
  */
 class Controller_Config extends Controller_REST {
 
-      protected $_groups = array(
+      /**
+       *
+       * @var array
+       */
+      protected $public_groups = array(
             'front',
             'import',
+            'list'
       );
 
       /**
@@ -32,7 +37,7 @@ class Controller_Config extends Controller_REST {
        *
        * @var string
        */
-      public $key;
+      public $group;
 
       public function before ()
       {
@@ -40,99 +45,74 @@ class Controller_Config extends Controller_REST {
 
             $param = $this->request->param();
 
-
             // Set the input property
             $this->_input = (array) json_decode($this->request->body(), TRUE);
 
             // Set the model using the id parameter (and the id attribute if that is not given)
-            $this->key = str_replace('/', '.',
+            $this->group = str_replace('/', '.',
                   $this->request->param('id', Arr::get($this->_input, 'id')));
-
-
-            if ( ! empty($this->key))
-                  $this->config = Kohana::$config->load($this->key);
-
-            //Fire::fb($this->key);
-            //Fire::fb($this->config);
       }
 
       public function action_read ()
       {
-
-            if (empty($this->key))
+            if (empty($this->group))
             {
-
                   $configs = array();
-
-                  foreach ($this->_groups as $group)
+                  foreach ($this->public_groups as $group)
                   {
-                        $options = Kohana::$config->load($group)->as_array();
-                        array_walk($options, array($this, '_sanitize'));
-                        $configs[] = array(
-                              'id' => $group,
-                              'options' => $options,
-                              'schema' => Kohana::$config->load("schema.$group")
-                        );
+                        $configs[] = $this->_read($group);
                   }
                   $this->response->body(json_encode($configs));
             }
             else
             {
-                  $options = is_object($this->config) ? $this->config->as_array()
-                              : $this->config;
-                  array_walk($options, array($this, '_sanitize'));
-                  $config = array(
-                        'id' => $this->key,
-                        'options' => $options,
-                        'schema' => Kohana::$config->load("schema.$this->key")
-                  );
+                  $config = $this->_read($this->group);
                   $this->response->body(json_encode($config));
             }
       }
 
       public function action_update ()
       {
+            if ( ! Auth::instance()->logged_in('admin'))
+            {
+                  throw new HTTP_Exception_403;
+            }
 
             $options = $this->_input['options'];
-            array_walk($options, array($this, '_sanitize'), false);
-            
-            foreach ($options as $key => $config) {
-                  Kohana::$config->_write_config($this->key, $key, $config);
+            array_walk($options, array('Arr', 'sanitize'), false);
+
+            foreach ($options as $key => $config)
+            {
+                  Kohana::$config->_write_config($this->group, $key, $config);
             }
 
             $this->request->action('read');
       }
 
-      protected function _sanitize (&$element, $key, $switch = true)
+      protected function _read ($group)
       {
-            $element = is_string($element) ? $this->_path($element, $switch) : $element;
-      }
-
-      protected function _path ($file, $switch = true)
-      {
-
-            $paths = array(
-                  '{{APPPATH}}' => APPPATH,
-                  '{{SYSPATH}}' => SYSPATH,
-                  '{{MODPATH}}' => MODPATH,
-                  '{{DOCROOT}}' => DOCROOT,
-            );
-
-            foreach ($paths as $key => $path)
+            $temp = explode('.', $group);
+            if ( ! in_array($temp[0], $this->public_groups))
             {
-
-                  $str1 = $switch ? $path : $key;
-                  $str2 = $switch ? $key : $path;
-
-                  if (strpos($file, $str1) === 0)
-                  {
-                        $file = $str2 . substr($file,
-                                    strlen($str1));
-                  }
+                  throw new HTTP_Exception_404;
             }
 
-            return $file;
+            $options = (array) Kohana::$config->load($group);
+            array_walk($options, array('Arr', 'sanitize'));
+            Arr::filter($options, array('Arr', 'acl_filter'));
+            $config = array(
+                  'id' => $this->group,
+                  'options' => $options
+            );
+
+            if (Auth::instance()->logged_in('admin'))
+            {
+                  $config['schema'] = Kohana::$config->load("schema.$this->group");
+            }
+            return $config;
+            
       }
+
 
       public function after ()
       {

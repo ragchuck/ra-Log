@@ -18,15 +18,15 @@ define([
                   template: _.template('\
                         <div class="chart-tabs tabbable tabs-right">\
                               <ul class="nav nav-tabs">\
-                                    <% _.each (chartTypes, function(name, type){ %>\
+                                    <% _.each (chartTypes, function(chartType){ %>\
                                           <li>\
-                                                <a href="#chart/<%= type %>" data-chart="<%= type %>" data-target="#tab-<%= type %>"><%= name %></a>\
+                                                <a href="#chart/<%=chartType.key%>" data-chart="<%=chartType.key%>" data-target="#tab-<%=chartType.key%>"><%=chartType.value%></a>\
                                           </li>\
                                     <% }); %>\
                               </ul>\
                               <div class="tab-content">\
-                                    <% _.each (chartTypes, function(name, type){ %>\
-                                          <div class="tab-pane" id="tab-<%= type %>">\
+                                    <% _.each (chartTypes, function(chartType){ %>\
+                                          <div class="tab-pane" id="tab-<%=chartType.key%>">\
                                                 <div class="chart-container"></div>\
                                                 <div class="chart-pager"></div>\
                                                 <div class="chart-table"></div>\
