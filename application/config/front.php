@@ -10,7 +10,7 @@ return array(
                   array(
                         'href' => '#profile',
                         'text' => __("System profile"),
-                        '_acl' => 'xyz'
+                        '_acl' => 'admin'
                   )
             ),
             'meta' => array(

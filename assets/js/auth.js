@@ -16,14 +16,14 @@ define([
                               validators: [{
                                     type: 'required', 
                                     message: __("Username is required")
-                                    }] 
+                              }] 
                         },
                         'password': {
                               type: 'Password',
                               validators: [{
                                     type: 'required', 
                                     message: __("Enter your password")
-                                    }] 
+                              }] 
                         },
                         'remember': {
                               type: 'Checkbox'
@@ -50,6 +50,7 @@ define([
                    */
                   has_role: function() {
                         var role, found = false, _self = this;
+                        // take a look on _.detect
                         switch(arguments.length) {
                               case 0:
                                     found = this.get('roles').length > 0;

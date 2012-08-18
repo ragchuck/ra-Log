@@ -79,7 +79,7 @@ class Controller_Config extends Controller_REST {
             }
 
             $options = $this->_input['options'];
-            array_walk($options, array('Arr', 'sanitize'), false);
+            Arr::sanitize($options, Arr::SANITIZE_SHOW_PATHS);
 
             foreach ($options as $key => $config)
             {
@@ -98,16 +98,16 @@ class Controller_Config extends Controller_REST {
             }
 
             $options = (array) Kohana::$config->load($group);
-            array_walk($options, array('Arr', 'sanitize'));
-            Arr::filter($options, array('Arr', 'acl_filter'));
+            Arr::sanitize($options, Arr::SANITIZE_HIDE_PATHS);
+            $filtered_options = Arr::acl_filter($options);
             $config = array(
-                  'id' => $this->group,
-                  'options' => $options
+                  'id' => $group,
+                  'options' => $filtered_options
             );
 
             if (Auth::instance()->logged_in('admin'))
             {
-                  $config['schema'] = Kohana::$config->load("schema.$this->group");
+                  $config['schema'] = Kohana::$config->load("schema.$group");
             }
             return $config;
             

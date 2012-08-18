@@ -62,7 +62,7 @@ body.acl-admin .acl-admin {
 }
 
 .ajax-error pre.source { margin: 1em 0 0em; padding: 0.4em; background: #eee; line-height: 1.2em; }
-.ajax-error pre.source li.highlight { background: lightyellow; }
+.ajax-error pre.source .highlight { background: lightyellow; }
 /*
 #notification-center {
     width: 600px;

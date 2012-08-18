@@ -163,7 +163,7 @@
                         <div class="btn-group pull-right">
                               &nbsp;
                               <button class="btn btn-mini btn-continue"><i class="icon-play"></i></button>
-                              <button class="btn btn-mini btn-cancel"><i class="icon-stop"></i></button>
+                              <button class="btn btn-mini btn-cancel" disabled="disabled"><i class="icon-stop"></i></button>
                         </div>
                         <div class="progress">
                               <div class="bar"></div>

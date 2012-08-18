@@ -184,7 +184,7 @@ class Kohana_Exception extends Kohana_Kohana_Exception {
 				if ($line === $line_number)
 				{
 					// Apply highlighting to this row
-					$row = ''.$row.'';
+					$row = '<span class="highlight">'.$row.'</span>';
 				}
 				else
 				{
@@ -199,7 +199,7 @@ class Kohana_Exception extends Kohana_Kohana_Exception {
 		// Close the file
 		fclose($file);
 
-		return '<pre class="source prettyprint linenums:'.$range['start'].'"><code class="language-php">'.$source.'</code></pre>';
+		return '<pre class="source prettyprint linenums:'.$range['start'].'">'.$source.'</code></pre>';
 	}
 
 }

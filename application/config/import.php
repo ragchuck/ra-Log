@@ -23,7 +23,7 @@ return array(
 	'workspace'       =>    DOCROOT."data/temp/",
 	'max_files'		=>	50,
       'ch_filter_type'  =>    'black',
-	'ch_filter'       =>	array('E-Total', 'Pac') ,//array('Error', 'Serial Number'), //array('E-Total', 'Pac')
+	'ch_filter'       =>	array('Error', 'Serial Number'), //array('E-Total', 'Pac')
 	'load_logs'		=>	TRUE,
 	'overwrite'		=>	FALSE,
       'test_load'       =>    TRUE,

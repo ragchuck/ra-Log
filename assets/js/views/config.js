@@ -10,7 +10,7 @@ define([
             var ConfigCollection = Backbone.Collection.extend({
                   url: 'config.json',
                   model: ConfigModel
-            })
+            });
       
             var ConfigView = Backbone.View.extend({
             

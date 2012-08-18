@@ -21,12 +21,11 @@ requirejs.config({
             'backbone.forms': 'libs/backbone-forms/backbone-forms.amd.min',
             'backbone.forms.bootstrap': 'libs/backbone-forms/templates/bootstrap',
             'backbone.forms.default': 'libs/backbone-forms/templates/default',
+            'backbone.workflow' : 'libs/backbone-workflow/workflow',
 
             // external libs
             'bootstrap' : 'libs/bootstrap/bootstrap.min',
             'highcharts': 'libs/highcharts/highcharts',
-            
-            // other
             'prettify' : 'libs/prettify/prettify',
 
             // plugins
@@ -41,9 +40,7 @@ requirejs.config({
       shim: {
 
             'underscore': {
-                  exports: function() {
-                        return _.noConflict();
-                  }
+                  exports: '_'
             },
             
             'jquery': {
@@ -54,41 +51,21 @@ requirejs.config({
 
             'backbone': {
                   deps: ['underscore', 'jquery'],
-                  exports: function() {
-                        return Backbone.noConflict();
-                  }
+                  exports: 'Backbone'
             },
 
-            'backbone.forms': {
-                  deps: ['backbone']
-            },
-            
-            'backbone.forms.bootstrap': {
-                  deps: ['backbone','backbone.forms']
-            },
-            
-            'backbone.forms.default': {
-                  deps: ['backbone','backbone.forms']
-            },
-            
-            'backbone.deep-model': {
-                  deps: ['backbone']
-            },
+            'backbone.forms':  ['backbone'],            
+            'backbone.forms.bootstrap': ['backbone','backbone.forms'],     
+            'backbone.forms.default': ['backbone','backbone.forms'],
+            'backbone.deep-model':  ['backbone'],
+            'backbone.workflow': ['backbone'],
 
-            'bootstrap' : {
-                  deps: ['jquery']
-            },
+            'bootstrdap' : ['jquery'],
+            
 
             'highcharts': {
                   deps: ['jquery'],
-                  exports: function() {
-                        Highcharts.setOptions({
-                              global: {
-                                    useUTC : false
-                              }
-                        });
-                        return Highcharts;
-                  }
+                  exports: 'Highcharts'
             }
       }
 
