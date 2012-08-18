@@ -28,9 +28,6 @@
 [submodule "modules/firephp"]
 	path = modules/firephp
 	url = git://github.com/kloopko/kohana-firephp.git
-[submodule "public/bootbox"]
-	path = public/bootbox
-	url = git://github.com/makeusabrew/bootbox.git
 [submodule "modules/backbone"]
 	path = modules/backbone
 	url = https://github.com/ragchuck/kohana-backbone-module.git
