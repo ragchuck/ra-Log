@@ -7,95 +7,70 @@
 */
 
 body > .container {
-      padding-top:50px;
+    padding-top: 50px;
 }
 
 .brand {
-      font-weight: bolder;
-      text-shadow: #fff 0px 0px 7px;
+    font-weight: bolder;
+    text-shadow: #fff 0 0 3px;
 }
+
 .brand span#ra {
-      color:lime;
+    color: lime;
 }
 
 .footer {
-      border-top: 1px solid #E5E5E5;
-      margin-top: 45px;
-      padding: 35px 0 36px;
+    border-top: 1px solid #E5E5E5;
+    margin-top: 45px;
+    padding: 35px 0 36px;
 }
 
 .popable {
-      border-bottom: 1px dotted #999999;
-      cursor: help;
+    border-bottom: 1px dotted #999999;
+    cursor: help;
 }
 
 #import-ch_filter {
-      column-count: 3;
-      -webkit-column-count: 3;
-      -moz-column-count: 3;
+    max-height: 15em;
+    overflow: auto;
+    border: 1px solid #ccc;
 }
 
-.table .value {
-      text-align: right;
+.table .value,
+.table .header {
+    text-align: right;
 }
 
 #import {
-      display: none;
-      background-color: #F0F0F0;
-      border: 1px solid rgba(0, 0, 0, 0.05);
-      box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05) inset;
-      padding: 9px;
-      margin-top: 40px;
+    display: none;
+    background-color: #F0F0F0;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05) inset;
+    padding: 9px;
+    margin-top: 40px;
+    text-shadow: #FFFFFF 1px 1px 0;
 }
 
 body .logged-in,
 body .acl-login,
 body .acl-admin,
 body.logged-in .logged-out {
-      display: none !important;
+    display: none !important;
 }
 
 body.logged-in .logged-in,
 body.acl-login .acl-login,
 body.acl-admin .acl-admin {
-      display: block !important;
+    display: block !important;
 }
 
-.ajax-error pre.source { margin: 1em 0 0em; padding: 0.4em; background: #eee; line-height: 1.2em; }
-.ajax-error pre.source .highlight { background: lightyellow; }
-/*
-#notification-center {
-    width: 600px;
-    padding-top: 45px;
-    padding-bottom: 0px;
-    position: fixed;
-    margin-left: auto;
-    margin-right: auto;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 1;
+.ajax-error pre.source {
+    margin: 1em 0 0;
+    padding: 0.4em;
+    background: #eee;
+    line-height: 1.2em;
 }
 
-#notification-center .content {
+.ajax-error pre.source .highlight {
+    background: lightyellow;
 }
-
-#notification-center .toggler {
-}
-
-#notification-center .toggler a {
-    display: block;
-    text-align: center;
-}
-
-.alert .btn-cancel {
-      margin-left: 4px;
-}
-
-#content > div {
-      display: none;
-}
-#content > div.active {
-      display: block;
-}
-*/
