@@ -5,28 +5,36 @@ defined('SYSPATH') or die('No direct script access.');
  */
 
 
-class Model_Chart extends Model_Backbone {
+class Model_Chart extends Model_Backbone
+{
 
-      protected $_has_many = array(
-            'series' => array(
-                  'model' => 'plot',
-            )
-      );
-      public $backbone_attributes = array(
-            'id',
-            'name',
-            'options',
-      );
+    protected $_table_columns = array(
+        'id' => NULL,
+        'name' => NULL,
+        'options' => NULL,
+    );
 
-      public function as_array ()
-      {
-            $data = parent::as_array();
-            $data['options'] = json_decode($data['options'], true);
-            
-            if ( ! Arr::path($data, "options.title.text", false))
-                  Arr::set_path($data, "options.title.text", __($data['name']));
+    protected $_has_many = array(
+        'series' => array(
+            'model' => 'plot',
+        )
+    );
 
-            return $data;
-      }
+    public $backbone_attributes = array(
+        'id',
+        'name',
+        'options',
+    );
+
+    public function as_array()
+    {
+        $data = parent::as_array();
+        $data['options'] = json_decode($data['options'], true);
+
+        if (!Arr::path($data, "options.title.text", false))
+            Arr::set_path($data, "options.title.text", __($data['name']));
+
+        return $data;
+    }
 
 }

@@ -186,6 +186,10 @@
     </div>
 
     <div id="content-container">
+        <div class="row">
+            <div class="span6" data-url="chart/day/2010/02/20" data-extractor="options">asdf</div>
+            <div class="span6" data-url="chart/day/2010/02/28" data-extractor="options">asdf</div>
+        </div>
     </div>
 
     <div class="footer">

@@ -31,3 +31,6 @@
 [submodule "modules/backbone"]
 	path = modules/backbone
 	url = https://github.com/ragchuck/kohana-backbone-module.git
+[submodule "modules/real-database"]
+	path = modules/real-database
+	url = git://github.com/cbandy/real-database.git

@@ -42,45 +42,47 @@ define([
             date = new Date();
         }
 
-        var chart;
+        var chart,
+            view = this.charts[type];
 
-        if (!this.charts[type]) {
+        console.log(view);
+
+        if (!view) {
 
             // Create the chartModel
             chart = new ChartModel({
-                "id": type,
-                "date": date
+                "id" : type,
+                "date" : date
             });
 
             // Set up the chart's view
             var view = new ChartView({
-                el: '#tab-' + type,
-                model: chart
+                el : '#tab-' + type,
+                model : chart
             });
 
+            // ... and fetch the data from the server
             chart.fetch({
-                success: function () {
+                success : function () {
                     view.render();
                 }
             });
 
             // Store the chart's reference to the dashboard
             this.charts[type] = view;
-
-            // ... and fetch the data from the server
-            //chart.fetch();
         }
         else {
-            this.charts[type].chart.showLoading();
-            chart = this.charts[type].model;
+            if ($('#tab-' + type)[0] !== view.$el[0]) {
+                $('#tab-' + type).replaceWith(view.$el);
+            }
+            chart = view.model;
             // only set the new date and fetch data from the server
             // the view's render function should be called automatically
             // after the model has changed
             chart.set({
-                'date': date,
-                'series': []
+                'date' : date,
+                'series' : []
             });
-            //chart.fetch();
         }
 
         // Trigger an event

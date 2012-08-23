@@ -35,6 +35,11 @@ abstract class Import_Schema
     public $ch_filter = array();
 
     /**
+     * @var array of channels to extract
+     */
+    public $extract = array();
+
+    /**
      * Extracts the channels from the SMA archives transforms the data from
      * the channels and loads the data into the database. (ETL)
      * Returns an array of the loaded data elements.
@@ -64,8 +69,8 @@ abstract class Import_Schema
     }
 
     /**
-     * "Sould-I-Load-This-Channel?"
-     * Checks the specified channel-key, wether it should be loaded or not
+     * "Should-I-Load-This-Channel?"
+     * Checks the specified channel-key, whether it should be loaded or not
      *
      * @param string $ch_key channel-key
      * @return bool
@@ -90,4 +95,7 @@ abstract class Import_Schema
         return (($bool AND $found) OR (!$bool AND !$found));
     }
 
+    public function use_pdo() {
+        return false;//Database::instance() instanceof Database_PDO;
+    }
 }

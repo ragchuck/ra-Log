@@ -15,6 +15,7 @@ requirejs.config({
 
         // jQuery plugins
         'jquery.dateFormat': 'libs/jquery/jquery.dateFormat',
+        'jquery.highcharts': 'libs/jquery/jquery-highcharts',
 
         // Backbone plugins
         'backbone.deep-model': 'libs/backbone-deep-model/deep-model',
@@ -52,6 +53,7 @@ requirejs.config({
             }
         },
 
+
         'backbone': {
             deps: ['underscore', 'jquery'],
             exports: 'Backbone'
@@ -68,7 +70,9 @@ requirejs.config({
         'highcharts': {
             deps: ['jquery'],
             exports: 'Highcharts'
-        }
+        },
+
+        'jquery.highcharts': ['jquery']
     }
 
 });

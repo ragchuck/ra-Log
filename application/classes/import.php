@@ -203,8 +203,8 @@ class Import
                 "Import aborted [:i rows affected] (:file)",
                 array(':i' => $cnt, ':file' => $file));
 
-            if ($this->config instanceof Kohana_Config_Group AND $this->config->get('throw_exceptions',
-                self::$throw_exceptions)
+            if ($this->config instanceof Kohana_Config_Group AND
+                $this->config->get('throw_exceptions', self::$throw_exceptions)
             )
                 throw new Import_Exception("Cannot import file ':file'. :message",
                     array(':file' => $file, ':message' => $e->getMessage())

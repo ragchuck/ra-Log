@@ -11,6 +11,17 @@ class Model_Plot extends Model_Backbone
         'chart' => array()
     );
 
+    protected $_table_columns = array(
+        'id' => 'int(11)',
+        'chart_id' => 'varchar(10)',
+        'filters' => 'varchar(255)',
+        'table_name' => 'varchar(45)',
+        'column_name_x' => 'varchar(45)',
+        'column_name_y' => 'varchar(45)',
+        'order_by' => 'varchar(45)',
+        'options' => 'varchar(255)',
+    );
+
     public $backbone_attributes = array(
         'id',
         'chart_id',

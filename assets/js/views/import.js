@@ -9,7 +9,8 @@ define([
 
         events: {
             'click .btn-pause': function () {
-                this.model[this.model.get('import_state') === 'paused' ? 'carryOn' : 'pause']();
+                var import_state = this.model.get('import_state');
+                this.model[import_state === 'paused' ? 'carryOn' : 'pause']();
             },
             'click .btn-recover': function () {
                 this.model.recover();
@@ -32,6 +33,7 @@ define([
             this.$el.find('.btn-pause').attr('disabled', true);
             this.$el.find('.btn-recover').attr('disabled', false);
         },
+
         onImportStart: function () {
             console.log('onImportStart', arguments);
             this.$el.stop(true).clearQueue();
@@ -43,13 +45,15 @@ define([
             this.$el.find('.btn-pause i').removeClass('icon-play').addClass('icon-pause');
             this.$el.find('.btn-recover').attr('disabled', true);
         },
+
         onImportPause: function () {
             console.log('onImportPause', arguments);
-            this.$el.addClass('alert-warning');
+            this.$el.removeClass('alert-info').addClass('alert-warning');
             this.$el.find('.info').append(' --- IMPORT PAUSED');
             this.$el.find('.progress').removeClass('progress-info progress-striped active').addClass('progress-warning');
             this.$el.find('.btn-pause i').removeClass('icon-pause').addClass('icon-play');
         },
+
         onImportSuccess: function () {
             console.log('onImportSuccess', arguments);
             var processed = this.model.get('filesProcessed').length,
@@ -62,6 +66,7 @@ define([
             this.$el.removeClass('alert-info').addClass('alert-success');
             this.$el.delay(7500).slideUp(500);
         },
+
         onImportProgress: function (response) {
             console.log('onImportProgress', arguments);
             var currentFile = this.model.get('currentFile'),

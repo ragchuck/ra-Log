@@ -1,6 +1,4 @@
-<?php
-defined('SYSPATH') or die('No direct script access.');
-
+<?php defined('SYSPATH') or die('No direct script access.');
 
 /**
  * Description of Import_Schema_MeanPublic
@@ -10,19 +8,26 @@ defined('SYSPATH') or die('No direct script access.');
 class Import_Schema_MeanPublic extends Import_Schema
 {
 
+    const CODE_DUPLICATE_KEY = 23000;
+
     public function etl($filename)
     {
+        if (Kohana::$profiling) {
+            $token = Profiler::start('Import', __FUNCTION__);
+        }
 
-        $extracts = array();
+        $buffers = array();
+        $buffers['data'] = array();
+        $buffers['log'] = array();
         $files = Import_Helper::unzip($filename);
         // scanning workspace for uncompressed files
         foreach ($files as $file) {
             // check if it's a Mean-Archive
             $bname = basename($file);
             if (preg_match('/^Mean\..*\.xml\.zip$/i', $bname)) {
-                $loader = array($this, "_load_data");
-            } elseif ($this->load_logs AND preg_match('/^Log\..*\.xml\.zip$/i', $bname)) {
-                $loader = array($this, "_load_log");
+                $type = 'data';
+            } elseif (preg_match('/^Log\..*\.xml\.zip$/i', $bname) AND $this->load_logs) {
+                $type = 'log';
             }
             else {
                 continue;
@@ -31,12 +36,22 @@ class Import_Schema_MeanPublic extends Import_Schema
             $innerFiles = Import_Helper::unzip($file);
             foreach ($innerFiles as $xmlFile) {
                 $xml = new SimpleXMLElement($xmlFile, NULL, true);
-                $extracts = array_merge($extracts, call_user_func($loader, $xml));
+                $buffers[$type] = array_merge($buffers[$type], call_user_func(array($this, "_read_$type"), $xml));
                 unset($xml);
                 unlink($xmlFile);
             }
             unlink($file);
         }
+
+        $extracts = array();
+        foreach ($buffers as $type => $buffer) {
+            $extracts += call_user_func(array($this, "_load_$type"), $buffer);
+        }
+
+        if (Kohana::$profiling) {
+            Profiler::stop($token);
+        }
+
         return $extracts;
     }
 
@@ -45,77 +60,137 @@ class Import_Schema_MeanPublic extends Import_Schema
      * @param SimpleXMLElement $xml
      * @return array
      */
-    protected function _load_data($xml)
+    protected function _read_data(SimpleXMLElement $xml)
     {
-        ////////////////////////////////////////////////////////////////////////
-        // Extract
-
-        $channels = array();
-
-        foreach ($xml->xpath("/WebBox/MeanPublic") as $channel) {
-            if ($this->siltc($channel->Key)) {
-                array_push($channels, (array)$channel);
-            }
+        if (Kohana::$profiling) {
+            $token = Profiler::start('Import', __FUNCTION__);
         }
 
         ////////////////////////////////////////////////////////////////////////
-        // Transform
+        // Extract
 
         $data = array();
-        foreach ($channels as $channel) {
+        foreach ($xml->xpath("/WebBox/MeanPublic") as $channel) {
+
+            // Check the channels against the configured filter
+            // Should-I-Load-This-Channel
+            if (!$this->siltc($channel->Key))
+                continue;
+
             // Don't load measurement errors
-            if ($channel['Key'] == 'E-Total' AND $channel['Min'] == 0)
+            // E-Total's Min cannot be 0
+            if ($channel->Key == 'E-Total' AND $channel->Min == 0)
                 continue;
 
             $row = array();
-            $key = explode(':', $channel['Key']);
+            $key = explode(':', $channel->Key);
             $row['ch_key'] = array_pop($key);
             $row['ch_serial'] = array_pop($key);
             $row['ch_list'] = join(':', $key);
-            $row['ch_datetime'] = $channel['TimeStamp'];
-            $row['ch_period'] = $channel['Period'];
-            $row['first'] = $channel['First'];
-            $row['min'] = $channel['Min'];
-            $row['mean'] = $channel['Mean'];
-            $row['max'] = $channel['Max'];
-            $row['last'] = $channel['Last'];
+            $row['ch_datetime'] = (string)$channel->TimeStamp;
+            $row['ch_period'] = (string)$channel->Period;
+            $row['first'] = (string)$channel->First;
+            $row['min'] = (string)$channel->Min;
+            $row['mean'] = (string)$channel->Mean;
+            $row['max'] = (string)$channel->Max;
+            $row['last'] = (string)$channel->Last;
 
-            $row['ch_date'] = date('Ymd', strtotime($channel['TimeStamp']));
+            $row['ch_date'] = date('Ymd', strtotime($channel->TimeStamp));
 
             array_push($data, $row);
+        }
+        if (Kohana::$profiling) {
+            Profiler::stop($token);
+        }
+        return $data;
+    }
+
+    /**
+     * @param array $data
+     * @return array
+     * @throws PDOException
+     */
+    function _load_data(array $data)
+    {
+
+        if (Kohana::$profiling) {
+            $token = Profiler::start('Import', __FUNCTION__);
         }
 
         ////////////////////////////////////////////////////////////////////////
         // Load
 
+        $query = "INSERT INTO data_actual  "
+            . "( ch_date,  ch_datetime,  ch_list,  ch_serial,  ch_key,  ch_period, "
+            . "  mean,  min,  max,  first,  last ) VALUES "
+            . "(:ch_date, :ch_datetime, :ch_list, :ch_serial, :ch_key, :ch_period, "
+            . " :mean, :min, :max, :first, :last )";
+
+        /** @var $insertStatement PDOStatement */
+        $insertStatement = Database::instance()->prepare($query);
+        $insertStatement->bindParam(':ch_date', $ch_date);
+        $insertStatement->bindParam(':ch_datetime', $ch_datetime);
+        $insertStatement->bindParam(':ch_list', $ch_list);
+        $insertStatement->bindParam(':ch_serial', $ch_serial);
+        $insertStatement->bindParam(':ch_key', $ch_key);
+        $insertStatement->bindParam(':ch_period', $ch_period);
+        $insertStatement->bindParam(':mean', $mean);
+        $insertStatement->bindParam(':min', $min);
+        $insertStatement->bindParam(':max', $max);
+        $insertStatement->bindParam(':first', $first);
+        $insertStatement->bindParam(':last', $last);
+
+
+        $query = "UPDATE data_actual  "
+            . " SET ch_date = :ch_date, ch_list = :ch_list, ch_period = :ch_period, "
+            . "     mean = :mean,  min = :min,  max = :max, first = :first, last = :last "
+            . " WHERE ch_serial = :ch_serial "
+            . "   AND ch_datetime = :ch_datetime "
+            . "   AND ch_key = :ch_key";
+
+        /** @var $updateStatement PDOStatement */
+        $updateStatement = Database::instance()->prepare($query);
+        $updateStatement->bindParam(':ch_date', $ch_date);
+        $updateStatement->bindParam(':ch_datetime', $ch_datetime);
+        $updateStatement->bindParam(':ch_list', $ch_list);
+        $updateStatement->bindParam(':ch_serial', $ch_serial);
+        $updateStatement->bindParam(':ch_key', $ch_key);
+        $updateStatement->bindParam(':ch_period', $ch_period);
+        $updateStatement->bindParam(':mean', $mean);
+        $updateStatement->bindParam(':min', $min);
+        $updateStatement->bindParam(':max', $max);
+        $updateStatement->bindParam(':first', $first);
+        $updateStatement->bindParam(':last', $last);
+
+
         $cnt = 0;
         $cnt_dup = 0;
         $arr = array();
-
-        //$query = Db::insert('data', array_Keys($data));
-
         foreach ($data as $row) {
             try {
-                $d = new Model_Data;
-                $d->values($row);
-                $d->save();
-            } catch (Exception $e) {
-                if ($this->overwrite) {
-                    // delete & retry...
-                    DB::delete('data_actual')
-                        ->where('ch_serial', '=', $d->ch_serial)
-                        ->where('ch_datetime', '=', $d->ch_datetime)
-                        ->where('ch_key', '=', $d->ch_key)
-                        ->execute();
-
-                    $d->save();
-                    $cnt_dup++;
+                extract($row);
+                $insertStatement->execute();
+            } catch (PDOException $e) {
+                if ($e->getCode() == self::CODE_DUPLICATE_KEY) {
+                    if ($this->overwrite) {
+                        $updateStatement->execute();
+                        $cnt_dup++;
+                    }
+                } else {
+                    throw $e;
                 }
             }
             // only give the W (Pac) to the client
-            if ($d->ch_key == 'Pac')
-                $arr[] = $d;
+            if ($row['ch_key'] == 'Pac')
+                $arr[] = array(
+                    (double)strtotime($row['ch_datetime']) * 1000,
+                    (float)$row['mean'],
+                );
             $cnt++;
+        }
+
+        if (Kohana::$profiling) {
+            Profiler::stop($token);
         }
 
         return $arr;
@@ -126,41 +201,96 @@ class Import_Schema_MeanPublic extends Import_Schema
      * @param SimpleXMLElement $xml
      * @return array
      */
-    protected function _load_log($xml)
+    protected function _read_log(SimpleXMLElement $xml)
     {
+        if (Kohana::$profiling) {
+            $token = Profiler::start('Import', __FUNCTION__);
+        }
 
-        //$arr = array();
+        $data = array();
+        foreach ($xml->xpath("/WebBox/Event") as $event) {
+            $row = array();
+            $row['datetime'] = (string)$event->DateTime;
+            $row['event_type'] = (string)$event->EventType;
+            $row['access_level'] = (string)$event->AccessLevel;
+            $row['category'] = (string)$event->Category;
+            $row['device'] = (string)$event->Device;
+            $row['module'] = (string)$event->Module;
+            $row['msg_code'] = (string)$event->MessageCode;
+            $row['msg_args'] = (string)$event->MessageArgs;
+            $row['msg_token'] = (string)$event->Message;
+            array_push($data, $row);
+        }
+
+        if (Kohana::$profiling) {
+            Profiler::stop($token);
+        }
+
+        return $data;
+    }
+
+    protected function _load_log(array $data)
+    {
+        if (Kohana::$profiling) {
+            $token = Profiler::start('Import', __FUNCTION__);
+        }
+
+        $query = "INSERT INTO log (datetime, event_type, access_level, category, device, module, msg_code, msg_args, msg_token)  "
+            . "VALUES (:datetime, :event_type, :access_level, :category, :device, :module, :msg_code, :msg_args, :msg_token )";
+
+        /** @var $insertStatement PDOStatement */
+        $insertStatement = Database::instance()->prepare($query);
+        $insertStatement->bindParam(':datetime', $datetime);
+        $insertStatement->bindParam(':event_type', $event_type);
+        $insertStatement->bindParam(':access_level', $access_level);
+        $insertStatement->bindParam(':category', $category);
+        $insertStatement->bindParam(':device', $device);
+        $insertStatement->bindParam(':module', $module);
+        $insertStatement->bindParam(':msg_code', $msg_code);
+        $insertStatement->bindParam(':msg_args', $msg_args);
+        $insertStatement->bindParam(':msg_token', $msg_token);
+
+
+        $query = "UPDATE log SET event_type = :event_type, access_level = :access_level, category = :category, "
+            . " device = :device, module = :module, msg_code = :msg_code, msg_args = :msg_args, msg_token = :msg_token "
+            . " WHERE datetime = :datetime ";
+
+        /** @var $updateStatement PDOStatement */
+        $updateStatement = Database::instance()->prepare($query);
+        $updateStatement->bindParam(':datetime', $datetime);
+        $updateStatement->bindParam(':event_type', $event_type);
+        $updateStatement->bindParam(':access_level', $access_level);
+        $updateStatement->bindParam(':category', $category);
+        $updateStatement->bindParam(':device', $device);
+        $updateStatement->bindParam(':module', $module);
+        $updateStatement->bindParam(':msg_code', $msg_code);
+        $updateStatement->bindParam(':msg_args', $msg_args);
+        $updateStatement->bindParam(':msg_token', $msg_token);
+
+
         $cnt = 0;
         $cnt_dup = 0;
-        foreach ($xml->xpath("/WebBox/Event") as $event) {
-            $data = array();
-            $data['datetime'] = $event->DateTime;
-            $data['event_type'] = $event->EventType;
-            $data['access_level'] = $event->AccessLevel;
-            $data['category'] = $event->Category;
-            $data['device'] = $event->Device;
-            $data['module'] = $event->Module;
-            $data['msg_code'] = $event->MessageCode;
-            $data['msg_args'] = $event->MessageArgs;
-            $data['msg_token'] = $event->Message;
+
+        foreach ($data as $row) {
 
             try {
-                $model = new Model_Log;
-                $model->values($data);
-                $model->save();
-            } catch (Exception $e) {
-                if ($this->overwrite) {
-                    // delete & retry...
-                    DB::delete('log')
-                        ->where('datetime', '=', $model->datetime)
-                        ->execute();
-
-                    $model->save();
-                    $cnt_dup++;
+                extract($row);
+                $insertStatement->execute();
+            } catch (PDOException $e) {
+                if ($e->getCode() == self::CODE_DUPLICATE_KEY) {
+                    if ($this->overwrite) {
+                        $updateStatement->execute();
+                        $cnt_dup++;
+                    }
+                } else {
+                    throw $e;
                 }
             }
-            //$arr[] = $model;
             $cnt++;
+        }
+
+        if (Kohana::$profiling) {
+            Profiler::stop($token);
         }
 
         return array();

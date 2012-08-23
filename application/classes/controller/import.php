@@ -32,7 +32,10 @@ class Controller_Import extends Controller_Base {
 		$data['file'] = $file_name;
 		$data['count'] = count($import->data);
 		foreach ($import->data as $d) {
-			$data['data'][] = $d->to_array();
+            if(is_array($d))
+			    $data['data'][] = $d;
+            else
+                $data['data'][] = $d->to_array();
 		}
 
 

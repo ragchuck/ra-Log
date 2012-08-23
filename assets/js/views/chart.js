@@ -2,7 +2,9 @@ define([
     'jquery',
     'underscore',
     'backbone',
-    'highcharts'
+    'highcharts',
+
+    'jquery.highcharts'
 ], function ($, _, Backbone, Highcharts) {
 
     _.nf = function (number, c) {
@@ -18,7 +20,7 @@ define([
 
     return Backbone.View.extend({
 
-        tmplPager: _.template('\
+        tmplPager : _.template('\
                         <div class="pager">\
                               <ul class="pager">\
                                     <li class="previous">\
@@ -30,7 +32,7 @@ define([
                               </ul>\
                         </div>'),
 
-        tmplTable: _.template('\
+        tmplTable : _.template('\
                         <div class="table">\
                               <table class="table table-bordered table-condensed">\
                                     <% _.each(table.rows, function(row, i) { %>\
@@ -57,7 +59,7 @@ define([
                               </table>\
                         </div>'),
 
-        initialize: function () {
+        initialize : function () {
             _.bindAll(this);
             //this.model.bind('change', this.render);
             this.model.bind('series:reset', this.renderSeries);
@@ -65,34 +67,33 @@ define([
             this.model.bind('change:date', this.renderMeta)
         },
 
-        render: function () {
+        render : function () {
 
-            var options = this.model.get('options');
-            var chart = this.chart;
+            var self = this,
+                options = self.model.get('options'),
+                chart = self.chart;
+
+            this.renderMeta();
 
             if (!chart) {
-                var _self = this;
-                options.chart.renderTo = this.$el.find('.chart-container')[0];
+                self.$el.find('.chart-container').highcharts({options : options}, function () {
+                    self.chart = this;
+                    self.chart.hideLoading();
 
-                // Trigger 'load' event when the chart is loaded
-                chart = new Highcharts.Chart(options, function () {
-                    _self.trigger('chart:load')
+                    // Trigger 'load' event when the chart is loaded
+                    self.trigger('chart:load');
                 });
-                this.chart = chart;
             }
             else {
                 console.log('chart already loaded.');
             }
 
-            chart.hideLoading();
-
             // Update the chart details
             //this.$el.find('.chart-details').html(_.template(chartDetailView, options))
-            this.renderMeta();
             return this;
         },
 
-        renderSeries: function () {
+        renderSeries : function () {
 
             var Chart = this.chart;
             var Series = this.model.series;
@@ -107,7 +108,6 @@ define([
 
             // Add the new series to the charts
             Series.each(function (plot) {
-                //console.log('seriesi',plot);
                 Chart.addSeries(plot.get('options'), false);
             });
             Chart.hideLoading();
@@ -115,38 +115,68 @@ define([
             return this;
         },
 
-        renderMeta: function () {
+        renderMeta : function () {
 
-            var date = this.model.get('date'),
-                interval = this.model.get('id'),
-                options = this.model.get('options'),
-                sChartUrl = "#chart/" + interval + "/%Y/%m/%d",
-                nextDate = this.dateAdd(date, interval, 1),
-                prevDate = this.dateAdd(date, interval, -1);
+            var model = this.model,
+                date = model.get('date'),
+                type = model.get('id'),
+                options = model.get('options'),
+                chartUrl, nextDateFormat, prevDateFormat,
+                nextDate = this.dateAdd(date, type, 1),
+                prevDate = this.dateAdd(date, type, -1);
 
-            this.$el.find('.chart-pager').html(this.tmplPager({
-                next: {
-                    href: Highcharts.dateFormat(sChartUrl, nextDate),
-                    text: Highcharts.dateFormat("%e. %b %Y &rarr;", nextDate)
-                },
-                prev: {
-                    href: Highcharts.dateFormat(sChartUrl, prevDate),
-                    text: Highcharts.dateFormat("&larr; %e. %b %Y", prevDate)
-                }
-            }));
+            if(this.chart) {
+                this.chart.showLoading();
+                this.chart.setTitle(options.title, options.subtitle);
+            }
 
-            this.chart.setTitle(options.title, options.subtitle)
+            switch (type) {
+                case "day":
+                    chartUrl = "#chart/" + type + "/%Y/%m/%d";
+                    nextDateFormat = "%e. %b %Y &rarr;";
+                    prevDateFormat = "&larr; %e. %b %Y";
+                    break;
+                case "month":
+                    chartUrl = "#chart/" + type + "/%Y/%m";
+                    nextDateFormat = "%b %Y &rarr;";
+                    prevDateFormat = "&larr; %b %Y";
+                    break;
+                case "year":
+                    chartUrl = "#chart/" + type + "/%Y";
+                    nextDateFormat = "%Y &rarr;";
+                    prevDateFormat = "&larr; %Y";
+                    break;
+                default:
+                    chartUrl = "#chart/" + type;
+                    break;
+            }
+
+            if ($.inArray(type, ["day", "month", "year"]) > -1) {
+                this.$el.find('.chart-pager').html(this.tmplPager({
+                    next : {
+                        href : Highcharts.dateFormat(chartUrl, nextDate),
+                        text : Highcharts.dateFormat("%e. %b %Y &rarr;", nextDate)
+                    },
+                    prev : {
+                        href : Highcharts.dateFormat(chartUrl, prevDate),
+                        text : Highcharts.dateFormat("&larr; %e. %b %Y", prevDate)
+                    }
+                }));
+            }
+            else {
+                this.$el.find('.chart-pager').empty();
+            }
         },
 
-        renderTable: function () {
+        renderTable : function () {
             this.$el.find('.chart-table').html(
                 this.tmplTable({
-                    table: this.model.table.attributes
+                    table : this.model.table.attributes
                 })
             );
         },
 
-        dateAdd: function (objDate, sInterval, iNum) {
+        dateAdd : function (objDate, sInterval, iNum) {
             var objDate2 = new Date(objDate);
             if (!sInterval || iNum == 0) return objDate2;
             switch (sInterval.toLowerCase()) {

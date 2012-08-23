@@ -3,6 +3,7 @@ define(
         'jquery',
         'underscore',
         'backbone',
+        'highcharts',
         'router',
         'auth',
         'controllers/import',
@@ -10,8 +11,9 @@ define(
         'i18n',
 
         'bootstrap',
-        'prettify'
-    ], function ($, _, Backbone, Router, Auth, ImportController, DashboardController, __) {
+        'prettify',
+        'jquery.highcharts'
+    ], function ($, _, Backbone, Highcharts, Router, Auth, ImportController, DashboardController, __) {
 
 
         var AppView = Backbone.View.extend({
@@ -107,6 +109,9 @@ define(
                     useUTC: false
                 }
             });
+
+            // set defaults for the highcharts plugin
+            $.highcharts({extract: 'options'});
 
             App.view = new AppView;
 
