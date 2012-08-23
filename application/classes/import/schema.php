@@ -94,8 +94,4 @@ abstract class Import_Schema
 
         return (($bool AND $found) OR (!$bool AND !$found));
     }
-
-    public function use_pdo() {
-        return false;//Database::instance() instanceof Database_PDO;
-    }
 }
